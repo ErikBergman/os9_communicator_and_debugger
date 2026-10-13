@@ -11,7 +11,7 @@ import tracemalloc
 import unittest
 from unittest.mock import patch
 
-SCRIPT = Path(__file__).resolve().parents[1] / "os9_file_transfer.py"
+SCRIPT = Path(__file__).resolve().parents[1] / "tools" / "file_transfer" / "os9_file_transfer.py"
 SPEC = importlib.util.spec_from_file_location("file_transfer", SCRIPT)
 transfer = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(transfer)

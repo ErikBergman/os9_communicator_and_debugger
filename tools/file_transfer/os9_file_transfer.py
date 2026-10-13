@@ -19,7 +19,8 @@ from uuid import uuid4
 
 CHUNK = 64 * 1024
 HEADER_LIMIT = 16 * 1024
-ROOT = Path(__file__).resolve().parent
+# Keep transfer storage at the repository root when tools are reorganized.
+ROOT = Path(__file__).resolve().parents[2]
 
 
 class UploadError(ValueError):

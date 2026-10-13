@@ -5,16 +5,28 @@ Updated: 13 October 2026, Europe/Stockholm.
 ## Browser file-transfer addition
 
 A standalone file-transfer server now lives in this repository:
-`os9_file_transfer.py`. Run it with Python 3 on the MacBook and open
+`tools/file_transfer/os9_file_transfer.py`. Run it with Python 3 on the MacBook and open
 `http://192.168.77.1:8000/` in Internet Explorer 5 on the iMac. It offers files
-from `transfer/to-imac` and saves uploads in `transfer/from-imac`, both beside
-the script. Port 8000 lets it coexist with the communicator on port 5000.
+from `transfer/to-imac` and saves uploads in `transfer/from-imac`, both at
+the repository root. Port 8000 lets it coexist with the communicator on port 5000.
 It streams files, defaults to a 2048 MiB upload limit, and requires no packages.
-See [README.md](README.md) for commands, options, and resource-fork preservation.
+See [the file-transfer instructions](tools/file_transfer/README.md) for commands, options, and resource-fork preservation.
 The addition does not relocate or modify the existing communicator below.
 Actual transfers with IE 5 on the physical iMac still need verification.
 
 ## Current outcome and status
+
+The uploaded Freddi Fisk image was inspected read-only on 13 October 2026.
+Its SHA-256 is `29f8319c86cfbfe22c3cd8658b1ac7a1c0aa61bea9b3a26b9c794c744027d77c`.
+It is a raw Mode 1 hybrid CD image with HFS and ISO 9660 filesystems.
+The HFS catalog contains 12 files; the Windows side contains 259 files.
+Both forks and Finder metadata were preserved separately for every HFS file.
+The game application has PowerPC PEF code in its data fork and 68k CODE
+resources in its resource fork. See [the inspection report](analysis/freddi-fisk/INVENTORY.md)
+and `analysis/freddi-fisk/inventory.json`. The source checksum and modification
+time were unchanged afterward. No Freddi crash diagnosis or repair has been
+performed. `tools/freddi_fisk/inspect_freddi_image.py` reproduces the inspection
+using the pinned dependencies in `tools/freddi_fisk/requirements.txt`.
 
 The MacBook and the physical iMac running Mac OS 9 communicate over a direct Ethernet connection. Browser-to-MacBook text logging, Terminal-to-iMac browser snippet delivery, and crash-report upload are implemented. AppleScript runs successfully on the iMac, and MacsBug 6.6.3 is installed and has captured a game failure.
 
