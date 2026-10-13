@@ -82,4 +82,7 @@ in `/tmp`. Independent PEF/import/TOC mapping located the direct caller in the
 file-close routine at text offset `0x5b2c`, calling the accessor stub from
 `0x5b40`. Targeted Ghidra decoding confirms the FCB/VCB reads and the replacement
 query/close/delete/flush sequence. The experimental application passes 26 mocked
-PowerPC emulation cases. Runtime mapping and a physical-iMac test remain open.
+PowerPC emulation cases. The user subsequently reported successful operation
+on the physical iMac on 13 October 2026. See
+[the physical test record](../../patches/os9-fcb-v1/IMAC-TEST.md) for the reported
+scope and remaining checks. Exact runtime address mapping remains unestablished.

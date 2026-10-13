@@ -115,4 +115,6 @@ to export focused disassembly/pseudocode; the broad automatic export missed it.
 
 See [the patch instructions](../../analysis/freddi-fisk/patches/os9-fcb-v1/README.md)
 for reproduction commands, iMac installation, checksums and remaining limits.
-The candidate passes static/emulated validation; physical OS 9 testing remains.
+The patch passes static/emulated validation. On 13 October 2026 the user also
+reported that it works on the physical OS 9 iMac. Save/reload and extended
+play have not been separately confirmed; see the linked physical test record.

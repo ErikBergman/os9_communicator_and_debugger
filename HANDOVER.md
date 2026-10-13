@@ -57,14 +57,26 @@ forks, resource code, PEF layout and imports remain intact.
 
 The patch passed 26 PowerPC emulation cases with mocked OS calls, ABI checks,
 independent PEF import/TOC mapping, Capstone/Ghidra decoding, and MacBinary
-fork/header checks. It has **not yet been tested on the physical iMac**. See
+fork/header checks. On 13 October 2026, the user tested the patched application
+on the physical iMac and reported **"It works perfectly."** Save/reload, extended
+play and an identical CD-backed speed-test run have not been individually
+confirmed. See
 [the patch instructions and evidence](analysis/freddi-fisk/patches/os9-fcb-v1/README.md).
 The test application is available locally at
 `transfer/to-imac/Freddi-Fisk-OS9-test.bin` (743,808 bytes), SHA-256
 `481135551234f3a996ba052f527f9a47e029c32cd3ba0c3c9af932c13ea7de79`.
 Expand it with StuffIt Expander and test in a separate hard-disk game folder.
-The Ethernet adapter and `192.168.77.1` address are currently absent; the server
-still listens, but downloading needs the direct link reconnected.
+The Ethernet adapter subsequently returned after the user unplugged its power
+supply. `en5` was verified active at 100baseTX full-duplex with `192.168.77.1`,
+and an HTTP download of the patch matched its recorded checksum. Both original
+servers were stopped at the user's request; the user later restarted the file
+transfer server from Terminal. Do not assume it remains running.
+
+The first launch from the Desktop reported an application-level file-open error
+for `Hårddisk:Desktop Folder: Freddi Fisk (2)`. The patch archive contains only
+the application. The user received instructions to put it alongside all four
+game-data files in a separate game folder, then reported success. See
+[the physical test record](analysis/freddi-fisk/patches/os9-fcb-v1/IMAC-TEST.md).
 
 The earlier Java JAR-loading stall was bypassed by staging fresh, verified
 copies of the same pinned toolchain in `/tmp/freddi-fresh-toolchain`. The repo

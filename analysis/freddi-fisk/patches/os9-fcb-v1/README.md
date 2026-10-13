@@ -1,15 +1,15 @@
 # Experimental Mac OS 9 FCB compatibility repair
 
-This is a **test candidate**, not yet verified on the physical iMac. It repairs
-the direct FCB-table lookup associated with the captured startup error 119.
+The user tested this patch on the physical iMac on 13 October 2026 and reported
+**"It works perfectly."** See [the physical test record](IMAC-TEST.md).
+It repairs the direct FCB-table lookup associated with the captured startup error 119.
 The original disk image and preservation forks have not been modified.
 
 ## Try it on the iMac
 
-1. Reconnect the MacBook's Ethernet adapter and direct iMac cable. At preparation
-   time the adapter/interface and `192.168.77.1` address were absent, so a live
-   download could not be verified. The existing transfer server still listens
-   on `192.168.77.1:8000`.
+1. Connect the MacBook's Ethernet adapter and direct iMac cable. Start
+   `python3 tools/file_transfer/os9_file_transfer.py` in a MacBook Terminal
+   from the repository root. Keep that Terminal running during the transfer.
 2. Restart the iMac after the previous crash. In Finder, create a new folder
    such as **Freddi OS9 test** on its hard disk. Copy the game's Mac files from
    the CD/image into it: **Freddi Fisk** and **Freddi Fisk (0)**, **(1)**,
@@ -91,9 +91,12 @@ saved in nonvolatile registers before that block is reused.
   preserved data fork's original checksum, size and modification time remain
   unchanged. `patch-manifest.json` records source/output hashes and scope.
 
-These checks do not emulate Mac OS 9 itself, verify actual File Manager behavior,
-prove the captured CD executable has identical bytes, or demonstrate gameplay
-on the physical iMac. No global system/ROM patch has been installed.
+The automated checks do not emulate Mac OS 9 itself or prove that the captured
+CD executable has identical bytes. The subsequent physical-iMac success is a
+user-reported result, not an instrumented trace or a comprehensive gameplay test.
+Save/reload and extended play remain useful follow-up checks. The build-time
+JSON reports retain their original pre-iMac-test status. No global system/ROM
+patch has been installed.
 
 ## Reproduce
 
