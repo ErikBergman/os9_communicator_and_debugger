@@ -2,6 +2,18 @@
 
 Updated: 13 October 2026, Europe/Stockholm.
 
+## Browser file-transfer addition
+
+A standalone file-transfer server now lives in this repository:
+`os9_file_transfer.py`. Run it with Python 3 on the MacBook and open
+`http://192.168.77.1:8000/` in Internet Explorer 5 on the iMac. It offers files
+from `transfer/to-imac` and saves uploads in `transfer/from-imac`, both beside
+the script. Port 8000 lets it coexist with the communicator on port 5000.
+It streams files, defaults to a 2048 MiB upload limit, and requires no packages.
+See [README.md](README.md) for commands, options, and resource-fork preservation.
+The addition does not relocate or modify the existing communicator below.
+Actual transfers with IE 5 on the physical iMac still need verification.
+
 ## Current outcome and status
 
 The MacBook and the physical iMac running Mac OS 9 communicate over a direct Ethernet connection. Browser-to-MacBook text logging, Terminal-to-iMac browser snippet delivery, and crash-report upload are implemented. AppleScript runs successfully on the iMac, and MacsBug 6.6.3 is installed and has captured a game failure.
