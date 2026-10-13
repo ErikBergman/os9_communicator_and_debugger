@@ -1,0 +1,369 @@
+ 
+  MacsBug 6.6.3, Copyright Apple Computer, Inc. 1981-2000
+  
+ System error #119 = dsMustUseFCBAccessors at 0639DFB8
+  
+  13-Oct-2026 2:18:33 PM (since boot = 1 hour, 24 minutes)
+  Current application is “Freddi Fisk”
+  Machine = #406 (NewWorldMac), System $0921, sysu = $01008000  {Hjälp}
+  ROM version $077D, $45F6, $0001 (ROMBase $FFC00000)
+  VM is on; paging is currently safe (and it probably isn't VM's fault)
+  NIL^ = $FFC10000
+  Stack space used = +2706
+ Address 0639DFB8 is in the Process Manager heap at 01471750 
+ It is 0045EDC8 bytes into this heap block:
+     Start    Length      Tag  Mstr Ptr Lock Prg  Type   ID   File      Name
+  • 05F3F1F0 0045F928+0C   R   07A5BD00   L       
+ 68020 Registers
+  D0 = 00000077      A0 = 00000001       USP  = 0639DF98
+  D1 = 00000010      A1 = 06136340       MSP  = 00000000
+  D2 = 0639E1C0      A2 = 00000000       ISP  = 07A75C00
+  D3 = 00000000      A3 = 00000000       VBR  = 00323600
+  D4 = 00000000      A4 = 00000000       CACR = 00000001     SFC = 0
+  D5 = 00000000      A5 = 0639EAF8       CAAR = 00000000     DFC = 0
+  D6 = 00000000      A6 = 0639E028       PC   = 0639DFB8
+  D7 = 00000000      A7 = 0639DF98       SR   = smxNzvc      Int = 0
+ Disassembling from 0639DF9E
+  No procedure name
+            0639DF9E   ORI.B      #$00,D0                                 | 0000 0000
+            0639DFA2   ORI.B      #$00,D0                                 | 0000 0000
+            0639DFA6   ORI.B      #$00,D0                                 | 0000 0000
+            0639DFAA   BCLR       D1,-(A4)                                | 03A4
+            0639DFAC   CMP2.B     A2,D2                                   | 00CA 264C
+            0639DFB0   DC.W       $FFC5                      ; ????       | FFC5
+            0639DFB2   ROL.W      A0                                      | E7C8
+            0639DFB4   ORI.B      #$00,D0                                 | 0000 0000
+            0639DFB8  *DC.W       $FE02                      ; ????       | FE02
+            0639DFBA   ORI.B      #$00,D0                                 | 0000 0000
+            0639DFBE   ORI.B      #$0639,D2                  ; '9'        | 0002 0639
+            0639DFC2   LSR.B      D0,D0                                   | E028
+            0639DFC4   ORI.B      #$1002,D0                               | 0000 1002
+            0639DFC8   ORI.W      #$C4E0,(A0)                             | 0050 C4E0
+            0639DFCC   ORI.L      #$E0CE0000,A2                           | 008A E0CE 0000
+            0639DFD2   ORI.B      #$00,D0                                 | 0000 0000
+            0639DFD6   ORI.W      #$0000,$00(A7,D0.W)                     | 0077 0000 0000
+            0639DFDC   ORI.B      #$00,D0                                 | 0000 0000
+            0639DFE0   ORI.B      #$00,D0                                 | 0000 0000
+            0639DFE4   ORI.B      #$00,D0                                 | 0000 0000
+ Heap zones
+  #1  Mod       20923K  00002800 to 0147174F  SysZone^
+  #2  Mod           6K    000191F0 to 0001ABDF  ROM read-only zone
+  #3  Mod          64K    00EEDEA0 to 00EFDE9F
+  #4  Mod         256K    010F9010 to 0113900F
+  #5  Mod      104363K  01471750 to 07A5C5DF  Process Manager zone
+  #6  Mod        4438K    05F3F1F0 to 06394A1F  “Freddi Fisk”  ApplZone^  TheZone^
+  #7  Mod        2021K    0639EB30 to 0659823F  “Skivverktyg”
+  #8  Mod       11973K    065BC340 to 0716DA4F  “Internet Explorer”
+  #9  Mod        1538K      0672BEF0 to 068AC6EF
+  #10 Mod        1537K    07191B50 to 0731225F  “Manusredigerare”
+  #11 Mod         749K    073CFCC0 to 0748B3CF  “Skivavbildning”
+  #12 Mod         558K    074AD4D0 to 07538CCF  “,,,”
+  #13 Mod         954K    0774B010 to 07839B1F  “Finder”
+  #14 Mod         103K    07877950 to 0789185F  “ScanWise Button Monitor”
+  #15 Mod         361K    078C8290 to 0792299F  “Folder Actions”
+  #16 Mod          53K    07939530 to 07946C3F  “FBC Indexing Scheduler”
+  #17 Mod         132K    07956FD0 to 0797800F  “EPSON Launcher”
+  #18 Mod          14K    079FACF0 to 079FE85F
+  #19 Mod          28K    079FE880 to 07A05C6F
+  #20 Mod           4K    07A07F50 to 07A08F4F
+  #21 Mod          15K    07A08F70 to 07A0CBEF
+  #22 Mod           9K    07A0CE40 to 07A0F56F
+  #23 Mod           2K    07A1B790 to 07A1C17F
+  #24 Mod         103K    07A283B0 to 07A422BF  “Agfa ScanWise Button”
+  #25 Mod        9215K  08100000 to 089FFFDF
+  #26 Mod         216K    082413D0 to 082773CF
+  #27 Mod          94K    08317450 to 0832F02F
+Checking all heaps
+ The System heap at 00002800 is ok
+ The ROM read-only heap at 000191F0 is ok
+ The heap at 00EEDEA0 is ok
+ The heap at 010F9010 is ok
+ The Process Manager heap at 01471750 is ok
+ The “Freddi Fisk” heap at 05F3F1F0 is ok
+ The “Skivverktyg” heap at 0639EB30 is ok
+ The “Internet Explorer” heap at 065BC340 is ok
+ The heap at 0672BEF0 is ok
+ The “Manusredigerare” heap at 07191B50 is ok
+ The “Skivavbildning” heap at 073CFCC0 is ok
+ The “,,,” heap at 074AD4D0 is ok
+ The “Finder” heap at 0774B010 is ok
+ The “ScanWise Button Monitor” heap at 07877950 is ok
+ The “Folder Actions” heap at 078C8290 is ok
+ The “FBC Indexing Scheduler” heap at 07939530 is ok
+ The “EPSON Launcher” heap at 07956FD0 is ok
+ The heap at 079FACF0 is ok
+ The heap at 079FE880 is ok
+ The heap at 07A07F50 is ok
+ The heap at 07A08F70 is ok
+ The heap at 07A0CE40 is ok
+ The heap at 07A1B790 is ok
+ The “Agfa ScanWise Button” heap at 07A283B0 is ok
+  System heap high free space + TempMem low free space = #78526704 (#74M)
+ The target heap is the System heap at 00002800
+ Totaling the System heap at 00002800
+                                 Total Blocks    Total of Block Sizes
+  Free                           000E      #14   00003700       #14080 (#13K)
+  Nonrelocatable                 16FC    #5884   00DF827C    #14647932 (#13M)
+  Relocatable                    0B1A    #2842   00673590     #6763920 (#6605K)
+    Locked                       03C1     #961   004E3040     #5124160 (#5004K)
+    Purgeable and not locked     0072     #114   0004DF80      #319360 (#311K)
+  Heap size                      2224    #8740   0146EF0C    #21425932 (#20M)
+ The target heap is the Process Manager heap at 01471750
+ Totaling the Process Manager heap at 01471750
+                                 Total Blocks    Total of Block Sizes
+  Free                           002E      #46   04BF12C0    #79631040 (#75M)
+  Nonrelocatable                 0003       #3   0000CC9C       #52380 (#51K)
+  Relocatable                    0178     #376   019ECEF0    #27184880 (#25M)
+    Locked                       00B7     #183   0184ACE0    #25472224 (#24M)
+    Purgeable and not locked     000A      #10   001606B0     #1443504 (#1409K)
+  Heap size                      01A9     #425   065EAE4C   #106868300 (#101M)
+ The target heap is the “Freddi Fisk” heap at 05F3F1F0
+ Totaling the “Freddi Fisk” heap at 05F3F1F0
+                                 Total Blocks    Total of Block Sizes
+  Free                           0005       #5   0020A950     #2140496 (#2090K)
+  Nonrelocatable                 0023      #35   001F657C     #2057596 (#2009K)
+  Relocatable                    0094     #148   00054920      #346400 (#338K)
+    Locked                       0004       #4   0004E070      #319600 (#312K)
+    Purgeable and not locked     0001       #1   00000030          #48
+  Heap size                      00BC     #188   004557EC     #4544492 (#4437K)
+ Displaying File Control Blocks
+  FRef Name                         VRef Type Fl ForkID   LogEOF
+  0002 System                       FFFF zsys mW rsrc     00A6A4E4
+  0006 **** EXTENTS B-TREE          FFFF •••• mw data     00400000
+  000A **** CATALOG B-TREE          FFFF •••• mw data     00800000
+  000E **** VOLUME BITMAP           FFFF •••• mw data     0004D000
+  00BA Skivavbildningslogg          FFFF TEXT mW data     0000D665
+  00CA System                       FFFF zsys mw data     007DB8C3
+  00E6 Freddi.img                   FFFF rohd mw data     04F3A1F9
+  00EE Type 1 Scaler                FFFF sclr mw data     000875A7
+  0106 USB Device Extension         FFFF ndrv mw data     0005FA6C
+  010A Sound Manager                FFFF INIT mw data     00004C42
+  0116 FontAnnexFile                FFFF xfnt mW data     00002790
+  0132 Microsoft Internet Library   FFFF shlb mw rsrc     00044738
+  014E QuickDraw™ 3D RAVE           FFFF shlb mw data     00042DFC
+  015E ATI Rage 128 3D Accelerator  FFFF shlb mw data     0009DDFA
+  0162 Language Kit Preferences     FFFF pref mW rsrc     00000228
+  0176 AppleShare                   FFFF RDEV mw rsrc     0007880D
+  017A Internet Explorer            FFFF APPL mW rsrc     00177663
+  019A Teckenkonvertering           FFFF shlb mw data     000265D0
+  019E Internet Explorer            FFFF APPL mw data     003747F9
+  01A2 AppleShare                   FFFF RDEV mw rsrc     0007880D
+  01A6 Microsoft Internet Library   FFFF shlb mw data     001BF3F9
+  01AE Humongous InstäAllningar     FFFF pref mW rsrc     0000020C
+  01C6 StdLog                       FFFF TEXT mW data     000022F9
+  01DE Microsoft Component Library  FFFF shlb mw data     0000D638
+  01E2 QuickTime™ PowerPlug         FFFF INIT mw data     0003E61E
+  01F2 PrintingLib                  FFFF shlb mw data     000AE88A
+  020A AppleScript                  FFFF thng mw data     000A6D3F
+  021A Apple Enet DLPI Support      FFFF shlb mw data     00013E38
+  021E EnetShimLib                  FFFF shlb mw data     00002FB0
+  022A Open Transport ASLM Modules  FFFF libr mw rsrc     000912DF
+  0232 Standard Additions           FFFF osax mw data     00021C2C
+  023A ScanWise Button Monitor      FFFF appe mw data     00009C07
+  026E Gene USB ML Shim_05E3_0710   FFFF ndrv mw data     00002D57
+  028E OpenTpt Remote Access        FFFF shlb mw data     000E5424
+  0292 OpenTpt Remote Access        FFFF shlb mw rsrc     00007E0C
+  0296 Fjärranslutningslogg         FFFF lzlg mW data     001AD000
+  029A Användare & grupper-fil      FFFF BTFL mW data     00027000
+  029E Network Setup Extension      FFFF shlb mw data     000795AB
+  02A2 Network Setup Extension      FFFF shlb mw rsrc     000073A3
+  02CA Microsoft Internet Library   FFFF shlb mw rsrc     00044738
+  02CE Open Transport ASLM Modules  FFFF libr mw rsrc     000912DF
+  02D2 cache.lck                    FFFF LOCK mW data     00000010
+  02D6 cache.waf                    FFFF WAFF mW data     00A00609
+  02EA OpenTpt Serial Arbitrator    FFFF libr mw rsrc     00001E53
+  02EE OpenTpt Serial Arbitrator    FFFF libr mw rsrc     00001E53
+  02FA ,,,                          FFFF APPL mW rsrc     0001D8C3
+  02FE Microsoft Internet Library   FFFF shlb mw rsrc     00044738
+  030A HID Library                  FFFF shlb mw data     000054B8
+  032A USB Software Locator         FFFF ndrv mw data     00004672
+  0332 ATI Resource Manager         FFFF shlb mw data     0003FD6A
+  0336 Folder Actions               FFFF appe mw data     00005260
+  0342 MS Font Embed Library (PPC)  FFFF shlb mw data     000379F1
+  034E QuickDraw™ 3D Viewer         FFFF shlb mw data     00011FA4
+  0352 QuickDraw™ 3D                FFFF INIT mw data     00133D3F
+  0362 FBC Indexing Scheduler       FFFF appe mw data     000049AF
+  0372 Security Library             FFFF shlb mw data     000FBFF2
+  0376 Internet Config Extension    FFFF thng mw data     00006C3C
+  037A Security Manager             FFFF shlb mw data     00048846
+  0382 Användare & grupper-fil      FFFF BTFL mW data     00027000
+  038E VM Storage                   FFFF ZSYS mW data     08A00000
+  0392 Chinese Encodings            FFFF ecpg mw data     00003FC8
+  039A Japanese Encodings           FFFF ecpg mw data     00003F18
+  03A2 Korean Encodings             FFFF ecpg mw data     00002DF8
+  03A6 System Resources             FFFF zsyr mw rsrc     000FFE33
+  0406 Unicode Encodings            FFFF ecpg mw data     000041E8
+  041E Agfa ScanWise Button         FFFF appe mW rsrc     00001E55
+  042E Download Cache               FFFF LOCK mW data     00000000
+  0432 Download Cache               FFFF WAFF mW data     0055B187
+  043E Skivverktyg                  FFFF APPL mW rsrc     0003BEB1
+  0442 Apple Audio Extension        FFFF INIT mw data     000731F6
+  044A EPSON Launcher               FFFF appe mW rsrc     00002101
+  045E FBC Indexing Scheduler       FFFF appe mW rsrc     00003062
+  0466 Skivverktyg                  FFFF APPL mw data     000325F0
+  046A Folder Actions               FFFF appe mW rsrc     0000146F
+  046E Display Profile 256          FFFF prof mw data     000002B0
+  0476 Apple Guide                  FFFF INIT mw data     0008E2D8
+  0482 Security Storage Module      FFFF shlb mw data     00079E5E
+  0486 ScanWise Button Monitor      FFFF appe mW rsrc     00001E55
+  048A Apple Monitor Plugins        FFFF INIT mw data     00008470
+  04A2 AppleShare                   FFFF RDEV mw data     0001ABC0
+  04AA Finder                       FFFF FNDR mW rsrc     00082002
+  04AE Finder                       FFFF FNDR mw data     001D370C
+  04B6 Color Picker                 FFFF INIT mw data     00001900
+  04BA Fildelningsbibliotek         FFFF shlb mw data     0000E421
+  04BE Fildelningsbibliotek         FFFF shlb mw rsrc     00001139
+  04C2 Security Cert Module         FFFF shlb mw data     0004AB3E
+  04CA ColorSync Extension          FFFF appe mw data     0006830A
+  04D6 Desktop DB                   FFFF BTFL mW data     00075000
+  04DA Desktop DF                   FFFF DTFL mW data     002B8E82
+  04E6 Security Policy Module       FFFF shlb mw data     0002ECFE
+  04EE Skivavbildning               FFFF APPL mW rsrc     000AA26A
+  0502 Skivavbildning               FFFF APPL mw data     00068280
+  050A Kontextmenytillägg           FFFF INIT mw data     00010467
+  050E SOMobjects™ for Mac OS       FFFF shlb mw data     0001F880
+  0516 AppleShare                   FFFF RDEV mw rsrc     0007880D
+  051A EPSON Launcher               FFFF appe mw data     00002E45
+  0522 EPSON Printer Library        FFFF shlb mw data     001F3620
+  052A EPSON Printer Utility        FFFF shlb mw data     0001827C
+  052E QuickTime™                   FFFF INIT mw data     000827FE
+  0536 Finder Inställningar         FFFF pref mW rsrc     000004B0
+  0542 Manusredigerare              FFFF APPL mW rsrc     00012DA2
+  0546 Stylus Photo 750 Library     FFFF shlb mw data     0000903F
+  0556 Manusredigerare              FFFF APPL mw data     0004D274
+  055E Open Transport               FFFF otsl mw data     000F2132
+  0562 Open Transport               FFFF otsl mw rsrc     00041C27
+  0566 CarbonLib                    FFFF INIT mw data     0035BA7E
+  0582 Find CM Items                FFFF cmpi mw data     00006702
+  0586 CarbonLib                    FFFF INIT mw rsrc     000930C0
+  058A CarbonLib Preferences (S)    FFFF pref mw rsrc     00000A04
+  058E Folder Actions Menus         FFFF cmpi mw data     0000287F
+  0596 UDFBridgeCMPlugin            FFFF cmpi mw data     0000148D
+  059E Open Transport ASLM Modules  FFFF libr mw rsrc     000912DF
+  05A2 Agfa ScanWise Button         FFFF appe mw data     0000E333
+  05E6 FireWire Enabler             FFFF ndrv mw data     0001C330
+  018A Freddi Fisk                  FFFE APPL mW rsrc     0005B758
+  01BE Freddi Fisk (4)              FFFE HeHe mw data     0186FA9D
+  01C2 Freddi Fisk (2)              FFFE HeHe mw data     01C91E89
+  0436 **** EXTENTS B-TREE          FFFE •••• mw data     00000800
+  043A **** CATALOG B-TREE          FFFE •••• mw data     00003800
+  0452 Desktop DB                   FFFE BTFL mW data     00004000
+  0456 Desktop DF                   FFFE DTFL mW data     00003782
+  00FA **** EXTENTS B-TREE          FFFD •••• mw data     00000800
+  00FE **** CATALOG B-TREE          FFFD •••• mw data     00003800
+  010E Desktop DB                   FFFD BTFL mW data     00004000
+  0112 Desktop DF                   FFFD DTFL mW data     00003782
+  #384 FCBs, #189 in use (including #64 fonts not listed), #195 free
+ Displaying Volume Control Blocks
+  vRef VolName             Flg dRef Drv# FSID NumBlks  BlkSiz FilCnt DirCnt BlsdDir  VCBPtr
+  FFFF Hårddisk            dsh FFCA 0008 0000 0026397F 001000 002AEF 000575 00000011 001CF990
+  FFFE Freddi              dSh FFBE 0004 0000 D643     000800 00000C 000001 00000000 00695E60
+  FFFD Freddi              dSh FFB9 000A 0000 D643     000800 00000C 000001 00000000 000D94F0
+  #3 VCBs
+ Displaying Drive Queue
+  Drive Volume               Flags dRef Driver Name           FSID   Size   QElem at
+  0008  Hårddisk             leiS  FFCA .ATADisk              0000 0131D3E6 001FB8A6
+  0004  Freddi               LEIS  FFBE .AppleCD              0000 0003591F 00524BF6
+  000A  Freddi               LEIS  FFB9 .HDI                  0000 0003591F 00833746
+  #3 drives
+ Displaying Driver Control Entries
+  dRef dNum Driver                      Flg  Ver   qHead  Stor/Ver Dely  Drvr at DCE at
+  FFFD 0002 .Print                      bHC   #0 00000000 00000000 0000 014465A0 012F1E30
+  FFFA 0005 .AIn                        bPC   #9 00000000 00000000 0000 00671D10 001FBC70
+  FFF9 0006 .AOut                       bPC   #9 00000000 00000000 0000 00671DD0 001FBCC0
+  FFF8 0007 .BIn                        bPC   #9 00000000 00000000 0000 00671E90 005CC170
+  FFF7 0008 .BOut                       bPC   #9 00000000 00000000 0000 00671F50 005CC1C0
+  FFF6 0009 .MPP                        bPO  #60 00000000 00000001 0000 007BA140 007AD5B0
+  FFF5 000A .ATP                        bPO  #58 00000000 0069F0B0 0000 007AC3A0 008E2E90
+  FFD7 0028 .XPP                        bPO  #58 00000000 006911B0 0000 007F9950 008CF3D0
+  FFD6 0029 .AFPTranslator              bPO   #0 00000000 005E6A10 003C 00A87D60 005479F0
+  FFCF 0030 .EDisk                      bPC   #0 00000000 00000000 003C FFCB5E70 000FCBB0
+  FFCE 0031 .LANDisk                    bPC   #1 00000000 00000000 0000 00100690 00112AC0
+  FFCD 0032 .Display_Rage128            bPO   #0 00000000 01.01f0F 0000 001133C8 00113390
+  FFCC 0033 .ATALoad                    bPO   #0 00000000 001F8FC0 0001 FFD9BC90 001CF6A0
+  FFCB 0034 .swmdrvr                    bPO   #0 00000000 00004E7C 001E 0059FF80 00239D00
+  FFCA 0035 .ATADisk                    bPO   #0 00000000 001FB862 0065 001FF70E 000577D0
+  FFC9 0036 .BCScreen                   bPO   #0 00000000 01.05f00 0000 00113038 00113000
+  FFC8 0037 .AGP                        bPO   #0 00000000 01.08f01 0000 005D20D8 005D20A0
+  FFC7 0038 .DAVAudio                   bPO   #0 00000000 01.21f00 0000 004ABE78 004ABE40
+  FFC6 0039 .AppleSoundInput            bPO  #50 00000000 01.32f00 0000 00528B28 00528AF0
+  FFC5 003A .i2c-mac-io                 bPO   #0 00000000 03.00f00 0000 00606438 00606400
+  FFC4 003B .Display_Video_Apple_Offsc… bPO   #0 00000000 01.00f00 0000 005D6808 005D67D0
+  FFC3 003C .ASLM                       bPO   #2 00000000 00000000 0000 006452A0 000DA120
+  FFC2 003D .SLM                        bPO   #2 00000000 00000000 0000 00669B10 00669CA0
+  FFC1 003E .DSP                        bPO  #58 00000000 00C925F0 0000 0081C7D0 00E03AE0
+  FFC0 003F .ipp                        bPC   #0 00000000 00000000 0000 00838840 007F6D10
+  FFBF 0040 .Infra                      bPO  #21 00000000 0083C0D0 0000 008393F0 00644BF0
+  FFBE 0041 .AppleCD                    bPO   #0 00000000 00524962 0078 008AE0CE 0050C4E0
+  FFBD 0042 .DVDRegMgr                  bHO   #0 00000000 00000000 0001 00CEA110 005F1220
+  FFBC 0043 .LeapIn                     bPC   #0 00000000 00000000 0000 00604EA0 005EFD10
+  FFBB 0044 .LeapOut                    bPC   #0 00000000 00000000 0000 00646990 005F1160
+  FFB9 0046 .HDI                        bPO   #0 00000000 00C7E6F0 001E 00CC62E0 008E4990
+  FFB8 0047 .AppleSoundInput            bPO  #50 00000000 01.32f00 0000 00695788 00695750
+  FFA0 005F .PrinterShare               bHO   #0 00000000 00003B98 0000 00C85E40 008C7630
+  #96 Unit Table entries, #33 in use, #63 free
+ Displaying resource information:
+  >   Map $05F68EFC, flags $FF80, file $01AE = Humongous InstäAllningar
+      Map $05F3F378, flags $0000, file $018A = Freddi Fisk
+   +  Map $00005860, flags $FF9A, file $0003 = •ROM resources that override System•
+    S Map $00005A40, flags $FF8D, file $0002 = System
+      Map $00003700, flags $001C, file $04BE = Fildelningsbibliotek
+      Map $000048C8, flags $001C, file $02A2 = Network Setup Extension
+      Map $00004854, flags $FF9C, file $0292 = OpenTpt Remote Access
+      Map $000049BC, flags $001C, file $0562 = Open Transport
+      Map $00004C88, flags $FF9C, file $0162 = Language Kit Preferences
+      Map $0000580C, flags $FF94, file $03A6 = System Resources
+      [Skipped $0040 maps belonging to font files]
+ Calling chain using A6/R1 links
+  Back chain  ISA  Caller
+ Return addresses on the stack
+  Stack Addr  Frame Addr   ISA   Caller
+   0639E384                PPC   0737F768
+   0639E358                PPC   073C4CF0
+   0639E344    0639E33C    PPC   0737C280
+   0639E30C    0639E304    PPC   0737EA00
+   0639E2E0                68K   01C2E31E
+   0639E2D8    0639E2D0    PPC   3F76AA90 NQDGetForeColor+00034
+   0639E2C8    0639E2C0    PPC   3F76AE24 NQDRGBForeColor+00038
+   0639E2C4    0639E2BC    PPC   0737E93C
+   0639E298    0639E290    PPC   0737B6BC
+   0639E278                68K   3F7852BE NQDStdRect+00172
+   0639E238    0639E230    PPC   FFD09CAC HSetState+00028
+   0639E218                PPC   3F77EF54 CheckPictureRecording+00018
+   0639E1F8    0639E1F0    PPC   3F83FE74 __HSetState+00018
+   0639E1D8                68K   3F785132 NQDXorRgn+008AA
+   0639E1A8    0639E1A0    PPC   3F9444D0 IsValidWindowPtr+0000C
+   0639E198    0639E190    PPC   3F90FA98 __GetAuxiliaryControlRecord+00680
+   0639E184    0639E180    68K   0613633E
+   0639E170                68K   0639E206
+   0639E168    0639E160    PPC   3F9446CC IsValidWindowPtr+00208
+   0639E140                68K   00B0A3C6
+   0639E138                68K   06135D5E
+   0639E128                68K   0020C106
+   0639E108                PPC   3F9444D0 IsValidWindowPtr+0000C
+   0639E100    0639E0F8    PPC   0737B748
+   0639E0FC    0639E0F8    68K   00323A30
+   0639E0E0    0639E0DC    68K   00322536
+   0639E0D8                68K   0032250C
+   0639E0C8                PPC   3F9446CC IsValidWindowPtr+00208
+   0639E0C0    0639E0B8    PPC   002FBBE0 LMGetFCBSPtr+00010
+   0639E0BC    0639E0B8    68K   0639E206
+   0639E0A4                68K   003203DC
+   0639E080    0639E078    PPC   FFCFB110 SysError+00018
+   0639E068    0639E064    68K   0031EA44
+   0639E034                68K   0031E982
+   0639E030    0639E028    PPC   3FC6BD48
+   0639DFB0                68K   FFC5E7C4 _vGoDriver+008E4
+ Displaying memory from sp
+  0639DF98  0639 DFD8 0000 0000  0000 0000 0000 0000  •9ﬂÿ••••••••••••
+  0639DFA8  0000 03A4 00CA 264C  FFC5 E7C8 0000 0000  •••§• &Lˇ≈Á»••••
+  0639DFB8  FE02 0000 0000 0002  0639 E028 0000 1002  ˛••••••••9‡(••••
+  0639DFC8  0050 C4E0 008A E0CE  0000 0000 0000 0077  •Pƒ‡•ä‡Œ•••••••w
+  0639DFD8  0000 0000 0000 0000  0000 0000 0000 0000  ••••••••••••••••
+  0639DFE8  0000 0000 0000 0000  0000 0000 0000 0000  ••••••••••••••••
+  0639DFF8  0000 0000 0000 0000  0000 0000 0000 0000  ••••••••••••••••
+  0639E008  0000 0000 0000 0000  0000 0000 00CA 48A2  ••••••••••••• H¢
+ Displaying memory from 0
+  00000000  FFC1 0000 FFC1 0000  00CA 3770 00CA 0012  ˇ¡••ˇ¡••• 7p• ••
+  00000010  EDAE 3770 00CA 3770  FFC0 48F8 FFC0 48FA  ÌÆ7p• 7pˇ¿H¯ˇ¿H˙
+ Closing log

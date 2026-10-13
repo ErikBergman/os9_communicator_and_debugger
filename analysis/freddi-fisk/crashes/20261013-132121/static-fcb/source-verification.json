@@ -1,0 +1,9 @@
+{
+  "input": "/Users/erikbergman/Documents/Programmering/MacOS9/os9_communicator_and_debugger/analysis/freddi-fisk/mac-forks/22/data.fork",
+  "before_sha256": "aa981103cd36cd9598da22d9ca1e3eca6ad59147dd5a9e7cc449e6a9d665a960",
+  "after_sha256": "aa981103cd36cd9598da22d9ca1e3eca6ad59147dd5a9e7cc449e6a9d665a960",
+  "before_bytes": 368936,
+  "after_bytes": 368936,
+  "before_mtime_ns": 1791887636904978513,
+  "after_mtime_ns": 1791887636904978513
+}

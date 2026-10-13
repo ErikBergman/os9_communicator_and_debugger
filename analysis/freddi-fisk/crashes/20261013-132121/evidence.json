@@ -1,0 +1,15 @@
+{
+  "uploaded_source": "/Users/erikbergman/Documents/Programmering/MacOS9/os9_communicator_and_debugger/transfer/from-imac/20261013-132121-85591d82ee76-StdLog",
+  "source_bytes": 23418,
+  "source_sha256": "f37b806c670980aa1b0e39e2ac474030265a5d19cd4ab3c3cc979c4908d9fbc8",
+  "preserved_raw_file": "StdLog.macroman",
+  "decoded_file": "StdLog.txt",
+  "decoding": "Mac Roman; CR normalized to LF in decoded copy only",
+  "system_error": 119,
+  "system_error_name": "dsMustUseFCBAccessors",
+  "current_application": "Freddi Fisk",
+  "system_version_hex": "0921",
+  "notable_stack_symbol": "LMGetFCBSPtr+00010",
+  "time_note": "Upload filename is MacBook receipt time; iMac report clock differs.",
+  "user_reported_trigger": "Startup: CD-ROM disk-speed test runs for a few seconds, then crashes."
+}

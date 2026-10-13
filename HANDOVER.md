@@ -39,6 +39,20 @@ PowerPC profiles, so this stage uses Ghidra directly. See
 and `tools/freddi_fisk/decompile_pef.py`. The local toolchain is in ignored
 `.local-tools/`; generated C files and import logs are also ignored.
 
+A real Freddi Fisk startup report was received as
+`transfer/from-imac/20261013-132121-85591d82ee76-StdLog`. The user reports a crash
+after the startup CD-ROM speed test runs for a few seconds. It records system
+error 119 (`dsMustUseFCBAccessors`) on Mac OS 9.2.1 and a stack-scan entry for
+`LMGetFCBSPtr+00010`. Apple's TN1184/OPS26 identify this as incompatible FCB
+access in Mac OS 9. The inspected executable imports that accessor, but the exact
+static caller and runtime relocation have not yet been established. The game
+files in this report are open from the physical CD volume `$FFFE`; a separate
+image volume `$FFFD` is mounted at the same time. See
+[the startup crash analysis](analysis/freddi-fisk/crashes/20261013-132121/ANALYSIS.md).
+Raw report bytes and a normalized UTF-8 copy are preserved there. No game/system
+patch has been made. A focused Ghidra rerun stalled during Java JAR loading
+and was stopped before the new probe executed.
+
 The MacBook and the physical iMac running Mac OS 9 communicate over a direct Ethernet connection. Browser-to-MacBook text logging, Terminal-to-iMac browser snippet delivery, and crash-report upload are implemented. AppleScript runs successfully on the iMac, and MacsBug 6.6.3 is installed and has captured a game failure.
 
 The King's Quest VII investigation is **paused at the user's request**. The original reproducible early-game failure could no longer be reproduced. A separate failure when loading the save named `Freja3` was traced to an empty save: the user confirmed that it had never actually saved the game. Creating a new profile, saving through the proper exit workflow, and loading that save worked.

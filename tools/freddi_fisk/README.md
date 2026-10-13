@@ -91,3 +91,10 @@ See [the decompilation checkpoint](../../analysis/freddi-fisk/decompilation/CHEC
 for the verified output counts, source checks, and observed analysis limitations.
 Optional REA version and provider-doctor probes stalled on this host and were
 stopped; the direct Ghidra analysis is the verified working path.
+
+`--probe-fcb --output /path/to/fresh-output` selects the focused FCB-reference
+script, `InspectFCBAccess.java`. It is prepared for the startup crash investigation,
+but the first attempt did not reach script execution because Java stalled loading
+a framework JAR. Its output is not yet verified. The launcher now puts the chosen
+JDK first on PATH as well as setting JAVA_HOME, because Ghidra's bootstrap prefers
+PATH's Java executable.

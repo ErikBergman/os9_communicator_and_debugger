@@ -22,6 +22,7 @@ def main():
     parser.add_argument("--output", type=Path, default=REPO / "analysis/freddi-fisk/decompilation")
     parser.add_argument("--ghidra-dir", type=Path, default=REPO / ".local-tools/ghidra_12.1.4_PUBLIC")
     parser.add_argument("--jdk-home", type=Path, default=REPO / ".local-tools/jdk-21.0.12.1+1/Contents/Home")
+    parser.add_argument("--probe-fcb", action="store_true", help="Trace FCB import references instead of exporting pseudocode")
     args = parser.parse_args()
     source, output = args.input.resolve(), args.output.resolve()
     header = source.open("rb")
@@ -34,12 +35,14 @@ def main():
     if not launcher.is_file() or not java.is_file():
         parser.error("Ghidra or the JDK is missing; see the tool README")
     output.mkdir(parents=True, exist_ok=True)
-    report_path = output / "ghidra-analysis.json"
+    report_path = output / ("fcb-access.json" if args.probe_fcb else "ghidra-analysis.json")
     if report_path.exists():
         parser.error("The output already has a completed report; choose a fresh --output directory")
     before, info = checksum(source), source.stat()
     env = dict(os.environ)
     env["JAVA_HOME"] = str(args.jdk_home.resolve())
+    # Ghidra's shell launcher picks PATH java before JAVA_HOME for bootstrap.
+    env["PATH"] = str(args.jdk_home.resolve() / "bin") + os.pathsep + env.get("PATH", "")
     with tempfile.TemporaryDirectory(prefix="freddi-ghidra-") as project:
         user_home = Path(project) / "home"
         java_temp = Path(project) / "tmp"
@@ -52,7 +55,7 @@ def main():
                    "-readOnly", "-deleteProject", "-analysisTimeoutPerFile", "300",
                    "-max-cpu", "2",
                    "-scriptPath", str(Path(__file__).resolve().parent),
-                   "-postScript", "ExportPefAnalysis.java", str(output),
+                   "-postScript", "InspectFCBAccess.java" if args.probe_fcb else "ExportPefAnalysis.java", str(output),
                    "-log", str(output / "ghidra-import.log"),
                    "-scriptlog", str(output / "ghidra-script.log")]
         result = subprocess.run(command, env=env, check=False)
@@ -74,7 +77,7 @@ def main():
         raise SystemExit("The analysis report does not identify the input fork")
     if report.get("language") != "PowerPC:BE:32:default":
         raise SystemExit("The analysis report has an unexpected processor language")
-    if report.get("cancelled") or not report.get("decompiled_function_count"):
+    if report.get("cancelled") or (not args.probe_fcb and not report.get("decompiled_function_count")):
         raise SystemExit("The decompilation was cancelled or produced no functions")
 
 
