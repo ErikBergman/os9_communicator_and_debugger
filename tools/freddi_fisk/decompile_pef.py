@@ -22,7 +22,9 @@ def main():
     parser.add_argument("--output", type=Path, default=REPO / "analysis/freddi-fisk/decompilation")
     parser.add_argument("--ghidra-dir", type=Path, default=REPO / ".local-tools/ghidra_12.1.4_PUBLIC")
     parser.add_argument("--jdk-home", type=Path, default=REPO / ".local-tools/jdk-21.0.12.1+1/Contents/Home")
-    parser.add_argument("--probe-fcb", action="store_true", help="Trace FCB import references instead of exporting pseudocode")
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--probe-fcb", action="store_true", help="Trace FCB import references instead of exporting pseudocode")
+    mode.add_argument("--review-close", action="store_true", help="Review the independently mapped original or patched file-close routine")
     args = parser.parse_args()
     source, output = args.input.resolve(), args.output.resolve()
     header = source.open("rb")
@@ -35,7 +37,10 @@ def main():
     if not launcher.is_file() or not java.is_file():
         parser.error("Ghidra or the JDK is missing; see the tool README")
     output.mkdir(parents=True, exist_ok=True)
-    report_path = output / ("fcb-access.json" if args.probe_fcb else "ghidra-analysis.json")
+    script, report_name = (("InspectFCBAccess.java", "fcb-access.json") if args.probe_fcb else
+                          ("ReviewCloseRoutine.java", "ghidra-close.json") if args.review_close else
+                          ("ExportPefAnalysis.java", "ghidra-analysis.json"))
+    report_path = output / report_name
     if report_path.exists():
         parser.error("The output already has a completed report; choose a fresh --output directory")
     before, info = checksum(source), source.stat()
@@ -55,9 +60,11 @@ def main():
                    "-readOnly", "-deleteProject", "-analysisTimeoutPerFile", "300",
                    "-max-cpu", "2",
                    "-scriptPath", str(Path(__file__).resolve().parent),
-                   "-postScript", "InspectFCBAccess.java" if args.probe_fcb else "ExportPefAnalysis.java", str(output),
+                   "-postScript", script, str(output),
                    "-log", str(output / "ghidra-import.log"),
                    "-scriptlog", str(output / "ghidra-script.log")]
+        if args.review_close:
+            command.append("-noanalysis")
         result = subprocess.run(command, env=env, check=False)
     after = source.stat()
     after_checksum = checksum(source)
@@ -77,7 +84,8 @@ def main():
         raise SystemExit("The analysis report does not identify the input fork")
     if report.get("language") != "PowerPC:BE:32:default":
         raise SystemExit("The analysis report has an unexpected processor language")
-    if report.get("cancelled") or (not args.probe_fcb and not report.get("decompiled_function_count")):
+    if (report.get("cancelled") or (args.review_close and not report.get("decompiled")) or
+            (not args.probe_fcb and not args.review_close and not report.get("decompiled_function_count"))):
         raise SystemExit("The decompilation was cancelled or produced no functions")
 
 

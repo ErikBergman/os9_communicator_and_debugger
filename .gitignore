@@ -10,3 +10,5 @@ analysis/**/decompilation/*.log
 analysis/**/decompilation/rejected-auto-language/
 analysis/**/decompilation/trial-source-verification/
 analysis/**/static-fcb/*.log
+analysis/**/patches/**/*.log
+analysis/**/patches/**/*.fork

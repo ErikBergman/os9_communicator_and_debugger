@@ -1,0 +1,43 @@
+{
+  "language": "PowerPC:BE:32:default",
+  "executable_sha256": "aa981103cd36cd9598da22d9ca1e3eca6ad59147dd5a9e7cc449e6a9d665a960",
+  "cancelled": false,
+  "fcb_imports": [
+    {
+      "name": "InterfaceLib::LMGetFCBSPtr",
+      "external_address": "EXTERNAL:0000000b",
+      "reference_edges": [
+        {
+          "from": "20024898",
+          "to": "EXTERNAL:0000000b",
+          "reference_type": "DATA",
+          "depth": 0
+        },
+        {
+          "from": "20000028",
+          "to": "20024898",
+          "reference_type": "DATA",
+          "depth": 1
+        }
+      ]
+    },
+    {
+      "name": "InterfaceLib::PBGetFCBInfoSync",
+      "external_address": "EXTERNAL:000000ad",
+      "reference_edges": [
+        {
+          "from": "20024b20",
+          "to": "EXTERNAL:000000ad",
+          "reference_type": "DATA",
+          "depth": 0
+        },
+        {
+          "from": "200002b0",
+          "to": "20024b20",
+          "reference_type": "DATA",
+          "depth": 1
+        }
+      ]
+    }
+  ]
+}

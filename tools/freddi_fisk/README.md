@@ -93,8 +93,26 @@ Optional REA version and provider-doctor probes stalled on this host and were
 stopped; the direct Ghidra analysis is the verified working path.
 
 `--probe-fcb --output /path/to/fresh-output` selects the focused FCB-reference
-script, `InspectFCBAccess.java`. It is prepared for the startup crash investigation,
-but the first attempt did not reach script execution because Java stalled loading
-a framework JAR. Its output is not yet verified. The launcher now puts the chosen
+script, `InspectFCBAccess.java`. The initial run stalled loading a framework JAR;
+a rerun using verified runtime copies in `/tmp` now completes. It resolves the
+external symbols to data slots but does not automatically resolve every TOC
+instruction. The launcher puts the chosen
 JDK first on PATH as well as setting JAVA_HOME, because Ghidra's bootstrap prefers
 PATH's Java executable.
+
+## Experimental OS 9 compatibility patch
+
+`patch_os9.py` replaces this edition's incompatible file-close helper and builds
+a MacBinary II application with the original resource fork and Finder metadata.
+It requires the exact preserved checksums and writes a separate output. It never
+updates the source disk image or forks.
+
+`validate_os9_patch.py` independently maps the PEF imports and runs original and
+patched PowerPC machine code under Unicorn, with mocked OS calls, ABI and fork
+checks. Dependencies are pinned in `patch-requirements.txt`. Ghidra's
+`--review-close` mode explicitly defines the verified routine and import stubs
+to export focused disassembly/pseudocode; the broad automatic export missed it.
+
+See [the patch instructions](../../analysis/freddi-fisk/patches/os9-fcb-v1/README.md)
+for reproduction commands, iMac installation, checksums and remaining limits.
+The candidate passes static/emulated validation; physical OS 9 testing remains.

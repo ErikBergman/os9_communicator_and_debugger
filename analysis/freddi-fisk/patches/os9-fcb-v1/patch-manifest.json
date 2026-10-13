@@ -1,0 +1,18 @@
+{
+  "status": "experimental; physical Mac OS 9 validation required",
+  "original_data_sha256": "aa981103cd36cd9598da22d9ca1e3eca6ad59147dd5a9e7cc449e6a9d665a960",
+  "patched_data_sha256": "ed76d3c0da7cb8063ac4f9fd529ee5b0ec014c7a1c71852c34375acd40b24409",
+  "resource_sha256": "11afcc615d7d3287a9dc9d65b42581c121f854c2ca4106d59792c315b14dcbf2",
+  "finder_info_sha256": "14893f3c718482f98aa0b19afbd0f3e54e22c365a3031512bca89e6309c0f25a",
+  "archive_sha256": "481135551234f3a996ba052f527f9a47e029c32cd3ba0c3c9af932c13ea7de79",
+  "archive_bytes": 743808,
+  "text_section_file_offset": 152,
+  "routine_section_offset": "0x5b2c",
+  "routine_bytes": 340,
+  "ghidra_address": "0x10005b2c",
+  "changed_bytes": 252,
+  "source_files_unchanged": true,
+  "resource_fork_unchanged": true,
+  "imports_and_relocations_unchanged": true,
+  "cpu": "PowerPC only; 68k CODE resources unchanged"
+}

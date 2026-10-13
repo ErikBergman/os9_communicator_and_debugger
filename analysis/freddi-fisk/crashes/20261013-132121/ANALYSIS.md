@@ -64,8 +64,9 @@ application code and documents FSM accessors for immediate access.
 
 Blindly suppressing the error or making the accessor return the old low-memory
 pointer would leave the incompatible table assumptions in place. No game or
-system binary has been patched. The next step is to identify the game's FCB
-caller and determine which file/volume information the speed test requests.
+system binary had been patched at this diagnosis checkpoint. The subsequent
+static mapping and experimental application repair are recorded in
+[the patch report](../../patches/os9-fcb-v1/README.md).
 
 ## Static caller trace status
 
@@ -75,3 +76,10 @@ main thread waiting in `RandomAccessFile.readBytes0` while opening a JAR ZIP
 directory. The optional probe was stopped. No static caller address or runtime
 address mapping is claimed from that attempt. The earlier completed PEF export
 and the preserved crash evidence remain available.
+
+The probe subsequently completed using fresh, checksum-verified runtime copies
+in `/tmp`. Independent PEF/import/TOC mapping located the direct caller in the
+file-close routine at text offset `0x5b2c`, calling the accessor stub from
+`0x5b40`. Targeted Ghidra decoding confirms the FCB/VCB reads and the replacement
+query/close/delete/flush sequence. The experimental application passes 26 mocked
+PowerPC emulation cases. Runtime mapping and a physical-iMac test remain open.

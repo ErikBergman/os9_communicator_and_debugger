@@ -1,0 +1,10 @@
+{
+  "path": "/Users/erikbergman/Documents/Programmering/MacOS9/os9_communicator_and_debugger/analysis/freddi-fisk/mac-forks/22/data.fork",
+  "sha256": "aa981103cd36cd9598da22d9ca1e3eca6ad59147dd5a9e7cc449e6a9d665a960",
+  "bytes": 368936,
+  "mtime_ns": 1791887636904978513,
+  "matches_inspection_sha256": true,
+  "matches_prepatch_mtime_ns": true,
+  "original_image_writes": false,
+  "original_fork_writes": false
+}

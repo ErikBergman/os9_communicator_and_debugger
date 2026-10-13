@@ -1,6 +1,8 @@
 // Trace real Ghidra references to FCB imports without assuming import-table offsets.
 // @category FreddiFisk
 import com.google.gson.GsonBuilder;
+import ghidra.app.decompiler.DecompInterface;
+import ghidra.app.decompiler.DecompileResults;
 import ghidra.app.script.GhidraScript;
 import ghidra.program.model.address.Address;
 import ghidra.program.model.listing.Function;
@@ -21,6 +23,7 @@ public class InspectFCBAccess extends GhidraScript {
         report.put("executable_sha256", currentProgram.getExecutableSHA256());
         report.put("cancelled", false);
         List<Map<String, Object>> imports = new ArrayList<>();
+        Set<Function> functions = new LinkedHashSet<>();
         SymbolIterator symbols = currentProgram.getSymbolTable().getExternalSymbols();
         while (symbols.hasNext()) {
             Symbol symbol = symbols.next();
@@ -46,6 +49,7 @@ public class InspectFCBAccess extends GhidraScript {
                         edge.put("reference_type", reference.getReferenceType().toString());
                         edge.put("depth", depth);
                         if (function != null) {
+                            functions.add(function);
                             edge.put("function", function.getName());
                             edge.put("function_entry", function.getEntryPoint().toString());
                         } else {
@@ -70,6 +74,28 @@ public class InspectFCBAccess extends GhidraScript {
         report.put("fcb_imports", imports);
         Path output = Path.of(getScriptArgs()[0]);
         Files.createDirectories(output);
+        // Export the actual callers and their immediate callers for patch review.
+        for (Function function : new ArrayList<>(functions)) {
+            functions.addAll(function.getCallingFunctions(monitor));
+        }
+        DecompInterface decompiler = new DecompInterface();
+        try {
+            decompiler.openProgram(currentProgram);
+            for (Function function : functions) {
+                DecompileResults result = decompiler.decompileFunction(function, 30, monitor);
+                String stem = function.getEntryPoint().toString();
+                if (result.decompileCompleted()) {
+                    Files.writeString(output.resolve(stem + ".c"), result.getDecompiledFunction().getC());
+                }
+                List<String> assembly = new ArrayList<>();
+                for (Instruction instruction : currentProgram.getListing().getInstructions(function.getBody(), true)) {
+                    assembly.add(instruction.getAddress() + " " + instruction);
+                }
+                Files.writeString(output.resolve(stem + ".asm"), String.join("\n", assembly) + "\n");
+            }
+        } finally {
+            decompiler.dispose();
+        }
         Files.writeString(output.resolve("fcb-access.json"),
             new GsonBuilder().setPrettyPrinting().create().toJson(report) + "\n");
         println("FCB import reference trace exported");

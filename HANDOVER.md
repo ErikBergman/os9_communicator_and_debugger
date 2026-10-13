@@ -12,7 +12,7 @@ the repository root. Port 8000 lets it coexist with the communicator on port 500
 It streams files, defaults to a 2048 MiB upload limit, and requires no packages.
 See [the file-transfer instructions](tools/file_transfer/README.md) for commands, options, and resource-fork preservation.
 The addition does not relocate or modify the existing communicator below.
-Actual transfers with IE 5 on the physical iMac still need verification.
+The physical iMac uploaded the image and crash report through IE 5 successfully.
 
 ## Current outcome and status
 
@@ -24,8 +24,7 @@ Both forks and Finder metadata were preserved separately for every HFS file.
 The game application has PowerPC PEF code in its data fork and 68k CODE
 resources in its resource fork. See [the inspection report](analysis/freddi-fisk/INVENTORY.md)
 and `analysis/freddi-fisk/inventory.json`. The source checksum and modification
-time were unchanged afterward. No Freddi crash diagnosis or repair has been
-performed. `tools/freddi_fisk/inspect_freddi_image.py` reproduces the inspection
+time were unchanged afterward. `tools/freddi_fisk/inspect_freddi_image.py` reproduces the inspection
 using the pinned dependencies in `tools/freddi_fisk/requirements.txt`.
 
 The PowerPC data fork was subsequently imported using Ghidra 12.1.4 with the
@@ -44,20 +43,40 @@ A real Freddi Fisk startup report was received as
 after the startup CD-ROM speed test runs for a few seconds. It records system
 error 119 (`dsMustUseFCBAccessors`) on Mac OS 9.2.1 and a stack-scan entry for
 `LMGetFCBSPtr+00010`. Apple's TN1184/OPS26 identify this as incompatible FCB
-access in Mac OS 9. The inspected executable imports that accessor, but the exact
-static caller and runtime relocation have not yet been established. The game
+access in Mac OS 9. The game's static caller has now been independently mapped
+to the file-close helper at PEF text offset `0x5b2c`, with the forbidden call at
+`0x5b40`. These offsets are not iMac runtime addresses. The game
 files in this report are open from the physical CD volume `$FFFE`; a separate
 image volume `$FFFD` is mounted at the same time. See
 [the startup crash analysis](analysis/freddi-fisk/crashes/20261013-132121/ANALYSIS.md).
-Raw report bytes and a normalized UTF-8 copy are preserved there. No game/system
-patch has been made. A focused Ghidra rerun stalled during Java JAR loading
-and was stopped before the new probe executed.
+Raw report bytes and a normalized UTF-8 copy are preserved there. An experimental
+PowerPC application patch now replaces the raw FCB/VCB reads with the existing
+`PBGetFCBInfoSync` and `PBHGetVInfoSync` imports, retaining close/delete/flush
+behavior. It changes 252 bytes within that 340-byte helper. The original image,
+forks, resource code, PEF layout and imports remain intact.
+
+The patch passed 26 PowerPC emulation cases with mocked OS calls, ABI checks,
+independent PEF import/TOC mapping, Capstone/Ghidra decoding, and MacBinary
+fork/header checks. It has **not yet been tested on the physical iMac**. See
+[the patch instructions and evidence](analysis/freddi-fisk/patches/os9-fcb-v1/README.md).
+The test application is available locally at
+`transfer/to-imac/Freddi-Fisk-OS9-test.bin` (743,808 bytes), SHA-256
+`481135551234f3a996ba052f527f9a47e029c32cd3ba0c3c9af932c13ea7de79`.
+Expand it with StuffIt Expander and test in a separate hard-disk game folder.
+The Ethernet adapter and `192.168.77.1` address are currently absent; the server
+still listens, but downloading needs the direct link reconnected.
+
+The earlier Java JAR-loading stall was bypassed by staging fresh, verified
+copies of the same pinned toolchain in `/tmp/freddi-fresh-toolchain`. The repo
+copies had macOS `dataless` flags. Targeted Ghidra review now completes. Broad
+automatic analysis missed this helper and did not resolve all TOC references;
+its recovered function list is incomplete.
 
 The MacBook and the physical iMac running Mac OS 9 communicate over a direct Ethernet connection. Browser-to-MacBook text logging, Terminal-to-iMac browser snippet delivery, and crash-report upload are implemented. AppleScript runs successfully on the iMac, and MacsBug 6.6.3 is installed and has captured a game failure.
 
 The King's Quest VII investigation is **paused at the user's request**. The original reproducible early-game failure could no longer be reproduced. A separate failure when loading the save named `Freja3` was traced to an empty save: the user confirmed that it had never actually saved the game. Creating a new profile, saving through the proper exit workflow, and loading that save worked.
 
-There is **no confirmed CD damage**, no game patch, and no inspected or repaired King's Quest VII disk image. The tools remain available if the original failure returns.
+There is **no confirmed CD damage** and no inspected or repaired King's Quest VII disk image. The tools remain available if the original failure returns.
 
 ## Where the implementation lives
 
@@ -256,7 +275,8 @@ The iMac's report clock and the MacBook's upload timestamp differed. Treat the f
 - A real MacsBug report was uploaded and analyzed.
 - Successful save and reload after the user used a new profile and the proper save/exit workflow.
 
-No full remote debugger, OS 9 logging extension, game binary patch, CD repair, or disk-image inspection was built or performed.
+No full remote debugger, OS 9 logging extension, or CD repair was built. Freddi
+image inspection and its experimental application patch are recorded above.
 
 ## References
 

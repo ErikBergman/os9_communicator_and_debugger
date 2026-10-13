@@ -1,0 +1,8 @@
+{
+  "language": "PowerPC:BE:32:default",
+  "executable_sha256": "aa981103cd36cd9598da22d9ca1e3eca6ad59147dd5a9e7cc449e6a9d665a960",
+  "routine_address": "10005b2c",
+  "decompiled": true,
+  "diagnostic": "",
+  "toc_assumption": "20008000, independently mapped from original PEF transition vector"
+}

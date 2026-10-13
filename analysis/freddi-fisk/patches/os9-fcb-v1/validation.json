@@ -1,0 +1,545 @@
+{
+  "status": "passed; real Mac OS 9 still untested",
+  "emulation_cases": 26,
+  "original_os9_mock_failure": {
+    "failure": "dsMustUseFCBAccessors:119",
+    "calls": [
+      "LMGetFCBSPtr"
+    ]
+  },
+  "cases": [
+    {
+      "temporary": false,
+      "signature": "0x4244",
+      "errors": {},
+      "result": 0,
+      "mutations": [
+        {
+          "api": "PBCloseSync",
+          "ref": 446
+        },
+        {
+          "api": "PBFlushVolSync",
+          "volume": -2
+        }
+      ],
+      "abi_preserved": true
+    },
+    {
+      "temporary": false,
+      "signature": "0x4244",
+      "errors": {
+        "PBCloseSync": -36
+      },
+      "result": -36,
+      "mutations": [
+        {
+          "api": "PBCloseSync",
+          "ref": 446
+        }
+      ],
+      "abi_preserved": true
+    },
+    {
+      "temporary": false,
+      "signature": "0x4244",
+      "errors": {
+        "PBFlushVolSync": -34
+      },
+      "result": -34,
+      "mutations": [
+        {
+          "api": "PBCloseSync",
+          "ref": 446
+        },
+        {
+          "api": "PBFlushVolSync",
+          "volume": -2
+        }
+      ],
+      "abi_preserved": true
+    },
+    {
+      "temporary": false,
+      "signature": "0x4244",
+      "errors": {
+        "PBHDeleteSync": -45,
+        "PBDeleteSync": -45
+      },
+      "result": 0,
+      "mutations": [
+        {
+          "api": "PBCloseSync",
+          "ref": 446
+        },
+        {
+          "api": "PBFlushVolSync",
+          "volume": -2
+        }
+      ],
+      "abi_preserved": true
+    },
+    {
+      "temporary": false,
+      "signature": "0xd2d7",
+      "errors": {},
+      "result": 0,
+      "mutations": [
+        {
+          "api": "PBCloseSync",
+          "ref": 446
+        },
+        {
+          "api": "PBFlushVolSync",
+          "volume": -2
+        }
+      ],
+      "abi_preserved": true
+    },
+    {
+      "temporary": false,
+      "signature": "0xd2d7",
+      "errors": {
+        "PBCloseSync": -36
+      },
+      "result": -36,
+      "mutations": [
+        {
+          "api": "PBCloseSync",
+          "ref": 446
+        }
+      ],
+      "abi_preserved": true
+    },
+    {
+      "temporary": false,
+      "signature": "0xd2d7",
+      "errors": {
+        "PBFlushVolSync": -34
+      },
+      "result": -34,
+      "mutations": [
+        {
+          "api": "PBCloseSync",
+          "ref": 446
+        },
+        {
+          "api": "PBFlushVolSync",
+          "volume": -2
+        }
+      ],
+      "abi_preserved": true
+    },
+    {
+      "temporary": false,
+      "signature": "0xd2d7",
+      "errors": {
+        "PBHDeleteSync": -45,
+        "PBDeleteSync": -45
+      },
+      "result": 0,
+      "mutations": [
+        {
+          "api": "PBCloseSync",
+          "ref": 446
+        },
+        {
+          "api": "PBFlushVolSync",
+          "volume": -2
+        }
+      ],
+      "abi_preserved": true
+    },
+    {
+      "temporary": false,
+      "signature": "0x1234",
+      "errors": {},
+      "result": 0,
+      "mutations": [
+        {
+          "api": "PBCloseSync",
+          "ref": 446
+        },
+        {
+          "api": "PBFlushVolSync",
+          "volume": -2
+        }
+      ],
+      "abi_preserved": true
+    },
+    {
+      "temporary": false,
+      "signature": "0x1234",
+      "errors": {
+        "PBCloseSync": -36
+      },
+      "result": -36,
+      "mutations": [
+        {
+          "api": "PBCloseSync",
+          "ref": 446
+        }
+      ],
+      "abi_preserved": true
+    },
+    {
+      "temporary": false,
+      "signature": "0x1234",
+      "errors": {
+        "PBFlushVolSync": -34
+      },
+      "result": -34,
+      "mutations": [
+        {
+          "api": "PBCloseSync",
+          "ref": 446
+        },
+        {
+          "api": "PBFlushVolSync",
+          "volume": -2
+        }
+      ],
+      "abi_preserved": true
+    },
+    {
+      "temporary": false,
+      "signature": "0x1234",
+      "errors": {
+        "PBHDeleteSync": -45,
+        "PBDeleteSync": -45
+      },
+      "result": 0,
+      "mutations": [
+        {
+          "api": "PBCloseSync",
+          "ref": 446
+        },
+        {
+          "api": "PBFlushVolSync",
+          "volume": -2
+        }
+      ],
+      "abi_preserved": true
+    },
+    {
+      "temporary": true,
+      "signature": "0x4244",
+      "errors": {},
+      "result": 0,
+      "mutations": [
+        {
+          "api": "PBCloseSync",
+          "ref": 446
+        },
+        {
+          "api": "PBHDeleteSync",
+          "volume": -2,
+          "name_hex": "0e53706565648e746573742e746d70",
+          "parent": 305419896
+        },
+        {
+          "api": "PBFlushVolSync",
+          "volume": -2
+        }
+      ],
+      "abi_preserved": true
+    },
+    {
+      "temporary": true,
+      "signature": "0x4244",
+      "errors": {
+        "PBCloseSync": -36
+      },
+      "result": -36,
+      "mutations": [
+        {
+          "api": "PBCloseSync",
+          "ref": 446
+        }
+      ],
+      "abi_preserved": true
+    },
+    {
+      "temporary": true,
+      "signature": "0x4244",
+      "errors": {
+        "PBFlushVolSync": -34
+      },
+      "result": -34,
+      "mutations": [
+        {
+          "api": "PBCloseSync",
+          "ref": 446
+        },
+        {
+          "api": "PBHDeleteSync",
+          "volume": -2,
+          "name_hex": "0e53706565648e746573742e746d70",
+          "parent": 305419896
+        },
+        {
+          "api": "PBFlushVolSync",
+          "volume": -2
+        }
+      ],
+      "abi_preserved": true
+    },
+    {
+      "temporary": true,
+      "signature": "0x4244",
+      "errors": {
+        "PBHDeleteSync": -45,
+        "PBDeleteSync": -45
+      },
+      "result": 0,
+      "mutations": [
+        {
+          "api": "PBCloseSync",
+          "ref": 446
+        },
+        {
+          "api": "PBHDeleteSync",
+          "volume": -2,
+          "name_hex": "0e53706565648e746573742e746d70",
+          "parent": 305419896
+        },
+        {
+          "api": "PBFlushVolSync",
+          "volume": -2
+        }
+      ],
+      "abi_preserved": true
+    },
+    {
+      "temporary": true,
+      "signature": "0xd2d7",
+      "errors": {},
+      "result": 0,
+      "mutations": [
+        {
+          "api": "PBCloseSync",
+          "ref": 446
+        },
+        {
+          "api": "PBDeleteSync",
+          "volume": -2,
+          "name_hex": "0e53706565648e746573742e746d70"
+        },
+        {
+          "api": "PBFlushVolSync",
+          "volume": -2
+        }
+      ],
+      "abi_preserved": true
+    },
+    {
+      "temporary": true,
+      "signature": "0xd2d7",
+      "errors": {
+        "PBCloseSync": -36
+      },
+      "result": -36,
+      "mutations": [
+        {
+          "api": "PBCloseSync",
+          "ref": 446
+        }
+      ],
+      "abi_preserved": true
+    },
+    {
+      "temporary": true,
+      "signature": "0xd2d7",
+      "errors": {
+        "PBFlushVolSync": -34
+      },
+      "result": -34,
+      "mutations": [
+        {
+          "api": "PBCloseSync",
+          "ref": 446
+        },
+        {
+          "api": "PBDeleteSync",
+          "volume": -2,
+          "name_hex": "0e53706565648e746573742e746d70"
+        },
+        {
+          "api": "PBFlushVolSync",
+          "volume": -2
+        }
+      ],
+      "abi_preserved": true
+    },
+    {
+      "temporary": true,
+      "signature": "0xd2d7",
+      "errors": {
+        "PBHDeleteSync": -45,
+        "PBDeleteSync": -45
+      },
+      "result": 0,
+      "mutations": [
+        {
+          "api": "PBCloseSync",
+          "ref": 446
+        },
+        {
+          "api": "PBDeleteSync",
+          "volume": -2,
+          "name_hex": "0e53706565648e746573742e746d70"
+        },
+        {
+          "api": "PBFlushVolSync",
+          "volume": -2
+        }
+      ],
+      "abi_preserved": true
+    },
+    {
+      "temporary": true,
+      "signature": "0x1234",
+      "errors": {},
+      "result": 0,
+      "mutations": [
+        {
+          "api": "PBCloseSync",
+          "ref": 446
+        },
+        {
+          "api": "PBFlushVolSync",
+          "volume": -2
+        }
+      ],
+      "abi_preserved": true
+    },
+    {
+      "temporary": true,
+      "signature": "0x1234",
+      "errors": {
+        "PBCloseSync": -36
+      },
+      "result": -36,
+      "mutations": [
+        {
+          "api": "PBCloseSync",
+          "ref": 446
+        }
+      ],
+      "abi_preserved": true
+    },
+    {
+      "temporary": true,
+      "signature": "0x1234",
+      "errors": {
+        "PBFlushVolSync": -34
+      },
+      "result": -34,
+      "mutations": [
+        {
+          "api": "PBCloseSync",
+          "ref": 446
+        },
+        {
+          "api": "PBFlushVolSync",
+          "volume": -2
+        }
+      ],
+      "abi_preserved": true
+    },
+    {
+      "temporary": true,
+      "signature": "0x1234",
+      "errors": {
+        "PBHDeleteSync": -45,
+        "PBDeleteSync": -45
+      },
+      "result": 0,
+      "mutations": [
+        {
+          "api": "PBCloseSync",
+          "ref": 446
+        },
+        {
+          "api": "PBFlushVolSync",
+          "volume": -2
+        }
+      ],
+      "abi_preserved": true
+    },
+    {
+      "query_failure": "PBGetFCBInfoSync",
+      "result": -51,
+      "calls": [
+        "PBGetFCBInfoSync"
+      ],
+      "mutations": [],
+      "abi_preserved": true
+    },
+    {
+      "query_failure": "PBHGetVInfoSync",
+      "result": -51,
+      "calls": [
+        "PBGetFCBInfoSync",
+        "PBHGetVInfoSync"
+      ],
+      "mutations": [],
+      "abi_preserved": true
+    }
+  ],
+  "archive_forks_type_creator_flags_crc": "passed",
+  "checksum_guard": "passed",
+  "patched_data_sha256": "ed76d3c0da7cb8063ac4f9fd529ee5b0ec014c7a1c71852c34375acd40b24409",
+  "archive_sha256": "481135551234f3a996ba052f527f9a47e029c32cd3ba0c3c9af932c13ea7de79",
+  "verified_pef_import_mapping": {
+    "imports": {
+      "LMGetFCBSPtr": {
+        "index": 10,
+        "stub_offset": "0xc78",
+        "toc_slot": "0x28"
+      },
+      "PBGetFCBInfoSync": {
+        "index": 172,
+        "stub_offset": "0xdc8",
+        "toc_slot": "0x2b0"
+      },
+      "PBHGetVInfoSync": {
+        "index": 84,
+        "stub_offset": "0x1938",
+        "toc_slot": "0x150"
+      },
+      "PBGetFInfoSync": {
+        "index": 207,
+        "stub_offset": "0xbb8",
+        "toc_slot": "0x33c"
+      },
+      "PBCloseSync": {
+        "index": 194,
+        "stub_offset": "0xc90",
+        "toc_slot": "0x308"
+      },
+      "PBDeleteSync": {
+        "index": 19,
+        "stub_offset": "0xbd0",
+        "toc_slot": "0x4c"
+      },
+      "PBHDeleteSync": {
+        "index": 229,
+        "stub_offset": "0xca8",
+        "toc_slot": "0x394"
+      },
+      "PBFlushVolSync": {
+        "index": 134,
+        "stub_offset": "0xcc0",
+        "toc_slot": "0x218"
+      }
+    },
+    "toc_section_offset": "0x8000",
+    "LMGetFCBSPtr_direct_call_offsets": [
+      "0x5b40"
+    ],
+    "import_slots": 313
+  },
+  "capstone_version": "5.0.7",
+  "unicorn_version": "2.1.4"
+}

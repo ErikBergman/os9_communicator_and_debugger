@@ -1,0 +1,9 @@
+{
+  "input": "/private/tmp/freddi-data.fork",
+  "before_sha256": "aa981103cd36cd9598da22d9ca1e3eca6ad59147dd5a9e7cc449e6a9d665a960",
+  "after_sha256": "aa981103cd36cd9598da22d9ca1e3eca6ad59147dd5a9e7cc449e6a9d665a960",
+  "before_bytes": 368936,
+  "after_bytes": 368936,
+  "before_mtime_ns": 1791899836003923324,
+  "after_mtime_ns": 1791899836003923324
+}
