@@ -1,0 +1,9 @@
+{
+  "rea_version": "6.4.0",
+  "package_tarball_integrity": "sha512-Vj1zWfSlna5bphGoaoI/TcVBuYvze9u+OyPC3Shz8YkBqaCTqB4COnnRoX7XDwMpwI24ZlFEel2yEj0k8LTWEQ==",
+  "adapter_file": "dist/ghidra/GhidraProvider.js",
+  "adapter_file_sha256": "18651ad2a0ca459ebf10212987845ab209bc4a7b7c3c8a69f184107fd4db2d32",
+  "supported_architecture_declaration": "const SUPPORTED_ARCHITECTURES = new Set([\n    \"x86\",\n    \"x86_64\",\n    \"arm\",\n    \"arm64\",\n    \"mips\",\n]);",
+  "binary_architecture_declaration": "/** Provider-neutral CPU families detected from supported executable headers. */\nexport const BINARY_ARCHITECTURES = [\n    \"x86\",\n    \"x86_64\",\n    \"arm\",\n    \"arm64\",\n    \"mips\",\n];\n",
+  "conclusion": "Stock REA 6.4.0 rejects the PEF header and has no PowerPC architecture profile. Direct Ghidra analysis is used without modifying or misrepresenting REA target metadata."
+}

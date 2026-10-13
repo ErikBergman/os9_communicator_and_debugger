@@ -1,6 +1,11 @@
 __pycache__/
 .DS_Store
+.local-tools/
 transfer/
 analysis/**/mac-forks/
 analysis/**/*.iso
 analysis/**/*.bin
+analysis/**/decompilation/functions/
+analysis/**/decompilation/*.log
+analysis/**/decompilation/rejected-auto-language/
+analysis/**/decompilation/trial-source-verification/

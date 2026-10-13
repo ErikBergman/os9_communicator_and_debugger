@@ -28,6 +28,17 @@ time were unchanged afterward. No Freddi crash diagnosis or repair has been
 performed. `tools/freddi_fisk/inspect_freddi_image.py` reproduces the inspection
 using the pinned dependencies in `tools/freddi_fisk/requirements.txt`.
 
+The PowerPC data fork was subsequently imported using Ghidra 12.1.4 with the
+explicit `PowerPC:BE:32:default` profile. The accepted run produced pseudocode
+for 1,022 recovered functions, 313 import symbols, and 509 defined strings,
+with input hash/size/modification-time checks passing. Many pseudocode outputs
+contain warnings; these are static-analysis artifacts, not recovered original
+source or a confirmed crash diagnosis. Stock REA 6.4.0 rejects PEF and excludes
+PowerPC profiles, so this stage uses Ghidra directly. See
+[the decompilation checkpoint](analysis/freddi-fisk/decompilation/CHECKPOINT.md)
+and `tools/freddi_fisk/decompile_pef.py`. The local toolchain is in ignored
+`.local-tools/`; generated C files and import logs are also ignored.
+
 The MacBook and the physical iMac running Mac OS 9 communicate over a direct Ethernet connection. Browser-to-MacBook text logging, Terminal-to-iMac browser snippet delivery, and crash-report upload are implemented. AppleScript runs successfully on the iMac, and MacsBug 6.6.3 is installed and has captured a game failure.
 
 The King's Quest VII investigation is **paused at the user's request**. The original reproducible early-game failure could no longer be reproduced. A separate failure when loading the save named `Freja3` was traced to an empty save: the user confirmed that it had never actually saved the game. Creating a new profile, saving through the proper exit workflow, and loading that save worked.

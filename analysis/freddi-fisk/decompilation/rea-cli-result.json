@@ -1,0 +1,15 @@
+{
+  "command": [
+    "rea",
+    "inspect",
+    "data.fork",
+    "--provider",
+    "ghidra",
+    "--format",
+    "json",
+    "--full-output"
+  ],
+  "exit_code": 1,
+  "stdout": "{\"ok\":true,\"data\":{\"error\":\"Analysis failed\",\"code\":\"target_unavailable\",\"category\":\"unavailable\",\"message\":\"Cannot open artifact: unsupported binary format. Check that the path exists, is readable, and points to a supported file.\",\"retryable\":false,\"remediation\":{\"action\":\"Cannot open artifact: unsupported binary format. Check that the path exists, is readable, and points to a supported file.\"},\"details\":{\"path\":\"/Users/erikbergman/Documents/Programmering/MacOS9/os9_communicator_and_debugger/analysis/freddi-fisk/mac-forks/22/data.fork\",\"reason\":\"unsupported binary format\"}},\"meta\":{\"command\":\"inspect\",\"duration\":\"16170ms\"}}\n",
+  "stderr": ""
+}

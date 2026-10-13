@@ -1,0 +1,25 @@
+{
+  "node_version": "24.19.0",
+  "rea_version": "6.4.0",
+  "ghidra_version": "12.1.4",
+  "jdk_version": "Temurin 21.0.12.1+1",
+  "verified_archives": [
+    {
+      "name": "ghidra",
+      "url": "https://github.com/NationalSecurityAgency/ghidra/releases/download/Ghidra_12.1.4_build/ghidra_12.1.4_PUBLIC_20260921.zip",
+      "sha256": "ddac49f903da9d5bac833e5cc79395098b9c33cfd3279be5f31bd00387d2d4db",
+      "download_bytes": 569649598
+    },
+    {
+      "name": "jdk",
+      "url": "https://github.com/adoptium/temurin21-binaries/releases/download/jdk-21.0.12.1%2B1/OpenJDK21U-jdk_aarch64_mac_hotspot_21.0.12.1_1.tar.gz",
+      "sha256": "3623232f33a9c3baadf304480b2535f9a3cba8a58d42ecbb438ba267315d9998",
+      "download_bytes": 200073404
+    }
+  ],
+  "native_decompiler": {
+    "architecture": "arm64",
+    "sha256": "c5e9775345e6841c717995a85f0bc33a972acc84b0990ad0d6fbccd6db0ae77d",
+    "build_command": "make -j2 ghidra_opt 'ARCH_TYPE=-arch arm64' OSDIR=mac_arm_64 'ADDITIONAL_FLAGS=-mmacosx-version-min=11.0 -w'"
+  }
+}

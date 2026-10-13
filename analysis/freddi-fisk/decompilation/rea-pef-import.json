@@ -1,0 +1,15 @@
+{
+  "rea_version": "6.4.0",
+  "check": "REA parseBinaryTarget",
+  "supported_architectures": [
+    "x86",
+    "x86_64",
+    "arm",
+    "arm64",
+    "mips"
+  ],
+  "result": {
+    "message": "Cannot open artifact: unsupported binary format",
+    "name": "Error"
+  }
+}
