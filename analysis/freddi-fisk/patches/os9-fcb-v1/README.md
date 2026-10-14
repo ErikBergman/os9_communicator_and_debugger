@@ -5,6 +5,9 @@ The user tested this patch on the physical iMac on 13 October 2026 and reported
 It repairs the direct FCB-table lookup associated with the captured startup error 119.
 The original disk image and preservation forks have not been modified.
 
+For the plain-language explanation and earlier Mac OS compatibility, see
+[the compatibility repair overview](../../COMPATIBILITY-REPAIR.md).
+
 ## Try it on the iMac
 
 1. Connect the MacBook's Ethernet adapter and direct iMac cable. Start

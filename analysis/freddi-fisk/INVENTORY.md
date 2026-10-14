@@ -2,6 +2,9 @@
 
 Inspected 13 October 2026, Europe/Stockholm.
 
+For the subsequent application modification, see the
+[plain-language compatibility repair explanation](COMPATIBILITY-REPAIR.md).
+
 ## Original image
 
 - Source: `/Users/erikbergman/Documents/Programmering/MacOS9/os9_communicator_and_debugger/transfer/from-imac/20261013-122508-0bdf521f70bd-Freddi Fisk.img`
@@ -39,7 +42,7 @@ Inspected 13 October 2026, Europe/Stockholm.
 ## Executable and preservation findings
 
 - **Freddi Fisk** is an APPL file with creator HeFF. Its 368,936-byte data fork starts with `Joy!peffpwpc`: PowerPC PEF code.
-- Its 374,616-byte resource fork includes a PowerPC `cfrg`, 13 `CODE` resources containing 68k code/jump-table material, and 2 `vers` resources reporting version 1.0. The Swedish readme explicitly lists both 68040 and PowerPC support.
+- Its 374,616-byte resource fork includes a PowerPC `cfrg`, 13 `CODE` resources containing 68k code/jump-table material, and 2 `vers` resources reporting version 1.0. The Swedish readme specifies System 7.0 or later and a 25 MHz or faster 68040 or PowerPC Macintosh.
 - The four Macintosh data files are `Freddi Fisk (0)`, `(1)`, `(2)`, and `(4)`. Their numbering alone is not evidence of a missing file.
 - The Windows side has `FREDDI.HE0` through `.HE4`. Only Mac `(4)` and Windows `.HE4` have identical SHA-256 hashes; the other compared data files differ and must not be substituted as interchangeable copies.
 - Every HFS file has exact data and resource fork copies under `mac-forks/<catalog ID>/`, plus the complete 32-byte Finder info and original catalog record. Each written artifact was hashed and checked against the bytes read from HFS.
@@ -56,7 +59,11 @@ Inspected 13 October 2026, Europe/Stockholm.
 
 ## Limits
 
-No game code was executed, repaired, or patched. No EDC/ECC verification, comparison against a known-good image, or crash diagnosis was performed. Readable files and matching copies do not prove that the image is undamaged.
+The original read-only inspection did not execute or modify game code or
+diagnose the crash. The subsequent repair of a separate application copy is
+documented separately. No EDC/ECC verification or comparison against a known-good
+image was performed. Readable files and matching copies do not prove that the
+image is undamaged.
 
 ## Reproduce
 
