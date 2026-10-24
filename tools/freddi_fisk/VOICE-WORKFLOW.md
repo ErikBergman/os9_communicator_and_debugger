@@ -125,6 +125,29 @@ python3 tools/freddi_fisk/rvc_voice.py train freddi --epochs 20
 python3 tools/freddi_fisk/rvc_voice.py train linus --epochs 20
 ```
 
+The commands display Rich progress bars for the overall epoch target and the
+current epoch, plus elapsed time and estimated time remaining. During startup
+the display says `Loading models / data`; percentages begin when the trainer
+reports its first batch. Batch percentages update at the trainer's log points
+(at least every ten batches), so they can stay still while a batch is running.
+On resume, progress starts at the restored epoch and the ETA is estimated from
+the current invocation. Epoch 100% means the epochs have finished; the command
+still waits for model export and verifies that an updated model was written.
+
+Rich runs inside the isolated RVC environment; the outer `python3` command does
+not need Rich installed globally. Existing installations need the new pinned
+dependency once (already installed on this Mac):
+
+```sh
+.local-tools/rvc-venv/bin/python -m pip install rich==14.1.0
+```
+
+Raw console output is retained in each experiment's `training-console.log`;
+the trainer's original `train.log` and TensorBoard files are retained too.
+Failures print recent console diagnostics and return a failure status. Ctrl+C
+stops the trainer and its child processes; checkpoint/resume behavior is
+unchanged. Redirected output includes an epoch-completion line for each epoch.
+
 Twenty is a starting experiment, not a quality guarantee. Evaluate held-out
 clips and new guide recordings, then adjust training as needed. On this M2
 MacBook, CPU training is slow: the initial three-segment Linus smoke epoch took
@@ -194,5 +217,5 @@ small test models.
 Run regression checks with Python 3.12 or later:
 
 ```sh
-"$VOICE_PYTHON" -m unittest discover -s tests -v
+.local-tools/rvc-venv/bin/python -m unittest discover -s tests -v
 ```

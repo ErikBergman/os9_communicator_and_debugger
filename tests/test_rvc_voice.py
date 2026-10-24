@@ -49,6 +49,21 @@ class TrainingInputTests(unittest.TestCase):
                     rvc.prepare("freddi", False)
                 run.assert_not_called()
 
+    def test_progress_wrapper_does_not_hide_a_missing_model_export(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            exp = root / "logs/swedish-linus-v2"
+            exp.mkdir(parents=True)
+            (exp / "preparation.json").write_text('{}')
+            (exp / "config.json").write_text(json.dumps({"train": {"log_interval": 50}}))
+            with patch.object(rvc, "RVC", root), patch.object(rvc, "run") as run:
+                with self.assertRaisesRegex(RuntimeError, "did not export"):
+                    rvc.train("linus", False, 20)
+            args = list(map(str, run.call_args.args[0]))
+            self.assertTrue(args[0].endswith("rvc_train_progress.py"))
+            self.assertIn("train.train", args)
+            self.assertEqual(json.loads((exp / "config.json").read_text())["train"]["log_interval"], 10)
+
 
 class WorkerExitTests(unittest.TestCase):
     def test_mac_worker_flushes_and_preserves_failure_status(self):
