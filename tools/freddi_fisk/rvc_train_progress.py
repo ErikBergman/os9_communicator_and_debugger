@@ -12,12 +12,49 @@ from pathlib import Path
 
 from rich.console import Console
 from rich.progress import (BarColumn, Progress, SpinnerColumn, TaskProgressColumn,
-                           TextColumn, TimeElapsedColumn, TimeRemainingColumn)
+                           TextColumn, TimeElapsedColumn)
 
 
 # Match the numbers, rather than translated labels, in RVC's locale files.
 BATCH = re.compile(r"(?<!\d)(\d+)\s*\[(\d+(?:\.\d+)?)%\]")
 EPOCH = re.compile(r"====>\s*\D+?(\d+)\b")
+EPOCH_DURATION = re.compile(r"\|\s*\((\d+):(\d+):(\d+(?:\.\d+)?)\)")
+
+
+def previous_epoch_seconds(path):
+    """Use the latest completed epoch, rather than old runs with different loads."""
+    try:
+        with Path(path).open("rb") as log:
+            log.seek(max(0, os.fstat(log.fileno()).st_size - 128000))
+            lines = log.read().decode("utf-8", errors="replace").splitlines()
+    except FileNotFoundError:
+        return None
+    for line in reversed(lines):
+        match = EPOCH_DURATION.search(line) if EPOCH.search(line) else None
+        if match:
+            hours, minutes, seconds = map(float, match.groups())
+            duration = hours * 3600 + minutes * 60 + seconds
+            if duration > 0:
+                return duration
+    return None
+
+
+def completion_estimate(epochs, completed, baseline, elapsed, prior_seconds):
+    """Exclude setup time and resumed epochs from the measured training rate."""
+    advance = completed - baseline
+    if elapsed >= 30 and advance >= .1:
+        seconds_per_epoch = elapsed / advance
+        source = "live pace"
+    elif prior_seconds is not None:
+        seconds_per_epoch = prior_seconds
+        source = "previous epoch"
+    else:
+        return "ETA calculating…"
+    remaining = max(0, epochs - completed) * seconds_per_epoch
+    minutes = int(remaining / 60 + .5)
+    hours, minutes = divmod(minutes, 60)
+    duration = f"{hours}h {minutes:02d}m" if hours else f"{minutes}m"
+    return f"~{duration} remaining ({source})"
 
 
 def parse_progress(line, epochs):
@@ -74,8 +111,12 @@ def monitor(command, folder, epochs, speaker, console=None, poll_interval=.2):
     console = console or Console()
     folder = Path(folder)
     folder.mkdir(parents=True, exist_ok=True)
-    tail = LogTail(folder / "train.log")
     output = folder / "training-console.log"
+    # The trainer's live epoch messages are captured from stdout in this file.
+    # train.log only contains setup/configuration messages, so tailing it leaves
+    # the Rich display stuck at "Loading models / data" for the whole run.
+    tail = LogTail(output)
+    prior_seconds = previous_epoch_seconds(output)
     console.print(f"Training {speaker} to {epochs} total epochs", markup=False)
     console.print(f"Trainer output: {output}", markup=False)
     env = os.environ.copy()
@@ -89,11 +130,13 @@ def monitor(command, folder, epochs, speaker, console=None, poll_interval=.2):
         try:
             with Progress(SpinnerColumn(), TextColumn("{task.description}"),
                           BarColumn(), TaskProgressColumn(), TimeElapsedColumn(),
-                          TimeRemainingColumn(), console=console,
+                          TextColumn("{task.fields[eta]}"), console=console,
                           refresh_per_second=4) as progress:
-                overall = progress.add_task("Loading models / data", total=None)
-                current = progress.add_task("Current epoch", total=100, visible=False)
+                overall = progress.add_task("Loading models / data", total=None,
+                                            eta="ETA after first batch")
+                current = progress.add_task("Current epoch", total=100, visible=False, eta="")
                 started, last_epoch, latest = False, 0, 0.0
+                baseline, training_started = 0.0, None
                 while True:
                     status = process.poll()
                     for line in tail.read():
@@ -107,13 +150,18 @@ def monitor(command, folder, epochs, speaker, console=None, poll_interval=.2):
                         if not started:
                             # Starting at a resumed epoch must not inflate speed / ETA.
                             progress.reset(overall, total=epochs, completed=epoch - 1)
+                            baseline, training_started = completed, time.monotonic()
                             started = True
                         latest = completed
                         if epoch != last_epoch:
                             progress.reset(current, total=100, completed=0, visible=True)
                             last_epoch = epoch
                         progress.update(overall, completed=completed,
-                                        description=f"{speaker} · epoch {epoch}/{epochs}")
+                                        description=f"{speaker} · epoch {epoch}/{epochs}",
+                                        eta=completion_estimate(
+                                            epochs, completed, baseline,
+                                            time.monotonic() - training_started,
+                                            prior_seconds))
                         progress.update(current, completed=percent,
                                         description=f"Epoch {epoch}")
                         if finished:
