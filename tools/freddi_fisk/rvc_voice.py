@@ -98,10 +98,18 @@ def train(speaker, smoke, epochs):
     exp = RVC / "logs" / name
     if not (exp / "preparation.json").is_file():
         raise RuntimeError("Run prepare for this speaker/experiment first")
+    config_file = exp / "config.json"
+    config = json.loads(config_file.read_text())
+    # Existing prepared experiments log only every 50 batches. Keep the bar
+    # responsive without changing the trainer or logging every single batch.
+    config["train"]["log_interval"] = min(config["train"]["log_interval"], 10)
+    config_file.write_text(json.dumps(config, indent=2) + "\n")
     (RVC / "assets/weights").mkdir(parents=True, exist_ok=True)
     model = RVC / "assets/weights" / (name + ".pth")
     before = model.stat().st_mtime_ns if model.exists() else None
-    run(["-m", "train.train", "-e", name, "-sr", "32k", "-f0", 1,
+    run([Path(__file__).with_name("rvc_train_progress.py"), "--folder", exp,
+         "--speaker", speaker.title(), "--epochs", epochs, "--",
+         "-m", "train.train", "-e", name, "-sr", "32k", "-f0", 1,
          "-bs", 1, "-g", "", "-te", epochs, "-se", min(5, epochs),
          "-pg", "assets/pretrained_v2/f0G32k.pth", "-pd", "assets/pretrained_v2/f0D32k.pth",
          "-l", 1, "-c", 0, "-sw", 0, "-v", "v2"])
