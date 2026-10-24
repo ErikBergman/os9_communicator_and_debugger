@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Freddi & Linus · Röststudio</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <div class="sea-line sea-line-one" aria-hidden="true"></div>
+  <div class="sea-line sea-line-two" aria-hidden="true"></div>
+  <main>
+    <header class="masthead">
+      <a class="brand" href="/">Freddi <span>&</span> Linus<span class="brand-dot">.</span></a>
+      <span class="local"><span></span> Lokalt på din Mac</span>
+    </header>
+    <section class="intro">
+      <span class="eyebrow">EN LITEN SVENSK RÖSTSTUDIO</span>
+      <h1>Något nytt att säga.</h1>
+      <p>Skriv en mening på svenska.<br class="mobile-break"> Låt Freddi eller Linus läsa upp den.</p>
+    </section>
+    <form id="studio" class="studio">
+      <fieldset class="voice-picker">
+        <legend>Vem ska prata?</legend>
+        <label class="voice-card freddi">
+          <input type="radio" name="speaker" value="freddi" checked>
+          <svg viewBox="0 0 108 70" aria-hidden="true"><path d="M75 33 99 15v42L75 40" fill="#df8855"/><ellipse cx="49" cy="36" rx="35" ry="26" fill="#efaa70"/><path d="m40 12 16-9 5 13" fill="#df8855"/><path d="m44 55 17 12 5-15" fill="#df8855"/><ellipse cx="30" cy="26" rx="8" ry="11" fill="#fffaf0"/><ellipse cx="46" cy="24" rx="8" ry="11" fill="#fffaf0"/><ellipse cx="28" cy="27" rx="3" ry="5" fill="#21444a"/><ellipse cx="44" cy="25" rx="3" ry="5" fill="#21444a"/><path d="M23 42q10 10 21 0" fill="none" stroke="#8d513d" stroke-width="2.5" stroke-linecap="round"/></svg>
+          <span><strong>Freddi</strong><small>Nyfiken på nästa äventyr</small></span>
+          <span class="selection" aria-hidden="true">✓</span>
+        </label>
+        <label class="voice-card linus">
+          <input type="radio" name="speaker" value="linus">
+          <svg viewBox="0 0 108 70" aria-hidden="true"><path d="m75 34 24-19v42L75 41" fill="#72a18b"/><ellipse cx="49" cy="37" rx="33" ry="26" fill="#9ac3a0"/><path d="m42 12 10-10 14 15" fill="#72a18b"/><path d="m48 57 17 10 2-16" fill="#72a18b"/><ellipse cx="31" cy="25" rx="8" ry="12" fill="#fffaf0"/><ellipse cx="47" cy="24" rx="8" ry="12" fill="#fffaf0"/><ellipse cx="29" cy="27" rx="3" ry="5" fill="#21444a"/><ellipse cx="45" cy="26" rx="3" ry="5" fill="#21444a"/><path d="M26 43q8 8 17 1" fill="none" stroke="#4e7965" stroke-width="2.5" stroke-linecap="round"/></svg>
+          <span><strong>Linus</strong><small>Alltid något på gång</small></span>
+          <span class="selection" aria-hidden="true">✓</span>
+        </label>
+      </fieldset>
+      <div class="text-heading"><label for="text">Vad vill du säga?</label><span id="count">0 / 400</span></div>
+      <textarea id="text" name="text" rows="4" maxlength="400" required spellcheck="true" placeholder="Hej Linus! Jag tror att jag har hittat en ledtråd.">Hej Linus! Ska vi leta efter skatten?</textarea>
+      <div class="prompts"><span>Prova en replik</span><button type="button" data-text="Jag tror att det finns en ledtråd här någonstans.">En ledtråd</button><button type="button" data-text="Oj! Vad var det där för något?">Något mystiskt</button><button type="button" data-text="Kom, så ger vi oss ut på ett nytt äventyr!">Ett nytt äventyr</button></div>
+      <details class="adjustments"><summary>Justera rösten <span>Valfritt</span></summary><div class="controls"><label for="rate">Taltempo<select id="rate"><option value="130">Lugnt</option><option value="160" selected>Normalt</option><option value="190">Snabbt</option></select></label><label for="pitch">Tonhöjd <output id="pitch-value" for="pitch">0</output><input type="range" id="pitch" min="-12" max="12" value="0" step="1"><span class="range-labels"><small>Mörkare</small><small>Ljusare</small></span></label></div></details>
+      <div class="action-row"><span class="shortcut">⌘ / Ctrl + Enter för att skapa</span><button id="generate" class="generate" type="submit" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 11 7-11 7Z" fill="currentColor"/></svg> Skapa röst</button></div>
+      <p id="error" class="error" role="alert" hidden></p>
+    </form>
+    <section class="playback" aria-labelledby="playback-title">
+      <div class="playback-heading"><span class="wave-icon" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><div><h2 id="playback-title">Din nästa replik</h2><p id="progress" role="status" aria-live="polite">Välj en röst och tryck på Skapa röst.</p></div><a id="download" class="download" hidden>Ladda ner WAV <span aria-hidden="true">↘</span></a></div>
+      <div id="result" hidden><p id="spoken-text" class="spoken-text"></p><audio id="audio" controls preload="metadata"></audio></div>
+    </section>
+    <aside class="prototype" id="prototype"><span aria-hidden="true">◌</span><p><strong>En första förhandsversion.</strong> Rösterna är bara kort provtränade och kan låta ojämna. Mer träning behövs för att fånga originalrösterna.</p></aside>
+    <footer><span>Små repliker. Stora äventyr.</span><span>Text och ljud stannar på din Mac.</span></footer>
+  </main>
+</body>
+</html>
