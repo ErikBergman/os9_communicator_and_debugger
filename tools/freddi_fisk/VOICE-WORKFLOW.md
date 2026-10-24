@@ -3,9 +3,56 @@
 Run from the `os9_communicator_and_debugger` repository. Everything is local.
 The game disc, preserved forks and original executable are never modified.
 
-RVC changes the voice of **recorded speech**. To dub a new sentence, first record
-that sentence in Swedish (or generate a guide recording separately), then
-convert the recording. RVC does not turn a Swedish text script into speech.
+RVC changes the voice of **recorded speech**. The text interface first reads
+your Swedish sentence with the installed macOS **Alva** voice, then converts
+that guide recording with Freddi's or Linus' separate RVC model.
+
+## Type a sentence in the local interface
+
+Double-click `tools/freddi_fisk/Start Voice Studio.command` in Finder, or run:
+
+```sh
+/usr/bin/python3 tools/freddi_fisk/voice_studio.py
+```
+
+The launcher opens <http://127.0.0.1:8765>. Choose Freddi or Linus, type up to
+400 characters in Swedish, and press **Skapa röst**. The result can be played
+and downloaded as a WAV. Optional controls adjust the guide's tempo and the
+conversion's pitch. Keep the terminal open; Ctrl+C stops the studio and any
+active conversion. Start it from a normal macOS terminal: restricted execution
+can make `say` silently produce an empty recording.
+
+**Current voices are previews:** each was trained for one epoch on three clips
+to verify the pipeline. The full character datasets have been prepared but
+full training has not completed. More training and listening evaluation are
+needed before calling these convincing copies of the original voices. Alva
+also supplies the pacing and expression, so generated delivery differs from
+the original actors' performances.
+
+The studio binds only to the loopback interface. Text, guide audio, converted
+WAVs and diagnostic logs are stored locally in
+`~/Library/Application Support/FreddiFishVoiceStudio/recordings/<job-id>/`.
+They are retained until you remove them; the server does not upload them.
+Requests run one at a time. The first conversion can take longer while Python
+imports and audio caches warm up. Each RVC conversion has a three-minute limit.
+
+On this Mac, iCloud offloads files in Documents even during long-running work.
+The interface therefore prefers the installed runtime outside Documents:
+
+```sh
+VOICE_RUNTIME="$HOME/Library/Application Support/FreddiFishVoiceStudio/runtime"
+"$VOICE_PYTHON" tools/freddi_fisk/setup_voice_tools.py install \
+  --runtime-root "$VOICE_RUNTIME" --inference-only
+/usr/bin/python3 tools/freddi_fisk/setup_voice_tools.py profiles \
+  --runtime-root "$VOICE_RUNTIME"
+```
+
+Define `VOICE_PYTHON` as shown in Install below. Both steps are already done on
+this Mac. The profiles command copies completed models and matching indexes
+from the training runtime in `.local-tools`. Run it again after full training;
+the studio automatically prefers full models over preview models. It falls
+back to `.local-tools` only when the separate runtime is absent. Keep the small
+`tools/freddi_fisk` source folder downloaded in Finder too.
 
 ## Install
 
@@ -21,9 +68,10 @@ The installer pins RVC and NUTCracker Git revisions, creates separate virtual
 environments under `.local-tools/`, and downloads the ContentVec/HuBERT, RMVPE,
 and RVC v2 32 kHz pitch-guided generator/discriminator weights. Model files are
 pinned to a Hugging Face revision and checked against committed SHA-256 hashes.
-All downloads and generated files stay in ignored repository directories.
-The exact installed Python dependencies are recorded in
-`analysis/freddi-fisk/voice-work/installed-rvc-requirements.txt`.
+Downloads stay in the selected runtime directory, which defaults to the ignored
+`.local-tools/` folder. Exact installed Python dependencies are recorded in
+`<runtime-root>/installed-rvc-requirements.txt` (the original installation's
+record is also retained in `analysis/freddi-fisk/voice-work/`).
 
 The upstream RVC CPU requirements use Linux-specific `+cpu` wheel names and
 unneeded UI dependencies. Our small Mac requirements use native Apple Silicon
@@ -120,7 +168,8 @@ On macOS, conversion runs in a small worker that flushes its output and exits
 after the upstream CLI returns its real status. This avoids a confirmed native
 shutdown deadlock between the PyTorch and FAISS OpenMP runtimes. Audio files
 have already been closed before the worker exits; failures retain nonzero exit
-codes. The upstream checkout is unmodified.
+codes. Interactive conversions also use one OpenMP thread. The upstream
+checkout is unmodified.
 
 ## Small end-to-end verification
 

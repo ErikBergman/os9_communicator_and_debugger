@@ -28,11 +28,27 @@
   successful conversion. The native process sample showed one OpenMP runtime
   waiting for workers associated with another runtime. The worker flushes logs
   and retains the upstream CLI exit code after audio files have closed.
+- Added a Swedish localhost text interface with Freddi/Linus selection, tempo
+  and pitch controls, progress, playback and WAV download. macOS Alva generates
+  the Swedish guide performance before character-specific RVC conversion.
+- Installed a separate inference runtime in
+  `~/Library/Application Support/FreddiFishVoiceStudio/runtime/`, with both
+  preview models and their matching indexes. Base-model checksums and
+  `pip check` pass. This avoids observed iCloud placeholder reads stalling the
+  original runtime inside Documents. Source code remains in the repository.
+- Verified text-to-audio through the actual browser interface for both voices:
+  Freddi produced a non-silent 3.10-second WAV; Linus produced non-silent
+  6.18-second and 3.22-second WAVs. Playback endpoints returned HTTP 200 and WAV
+  data. These checks establish functionality, not voice similarity.
+- All 29 regression tests pass, including Swedish API roundtrips, audio serving,
+  input validation, local runtime selection and full/preview model selection.
 
 The local `voice-work/` folder contains manifests, audio review HTML, generated
 WAVs, installation evidence and logs. `.local-tools/rvc/logs/` contains the
 prepared full experiments and the separate smoke training checkpoints.
-All generated audio, transcripts and model files are excluded from Git.
+All generated audio, transcripts and model files are excluded from Git. The
+interface's entered text and generated recordings live outside iCloud Documents
+under `~/Library/Application Support/FreddiFishVoiceStudio/recordings/`.
 
 ## Remaining for usable voice clones
 
@@ -45,8 +61,10 @@ large production run, particularly any unusual or ambiguous lines.
 The original recordings are low-bandwidth 8-bit speech at roughly 11 kHz.
 Freddi has about 10m 44s of training audio; Linus about 3m 11s. These constrain
 the likely output quality, particularly Linus. A longer CPU training run may
-take hours. RVC still requires a spoken Swedish guide recording for each new
-line; it is not a text-to-speech model.
+take hours. RVC requires a spoken Swedish guide recording for each new line;
+the new interface supplies one automatically using macOS Alva. That guide also
+determines pacing and expression. Full trained models can be copied into the
+interface runtime with the documented `setup_voice_tools.py profiles` command.
 
 Reproduction and training commands are in
 [the voice workflow](../../tools/freddi_fisk/VOICE-WORKFLOW.md).
