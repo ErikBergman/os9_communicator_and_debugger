@@ -118,7 +118,7 @@ def convert(speaker, smoke, source, output, pitch):
     indexes = sorted((RVC / "logs" / name).glob("added*.index"))
     if not indexes:
         raise RuntimeError("Missing retrieval index; run prepare first")
-    run(["-m", "infer.cli", "--model", RVC / "assets/weights" / (name + ".pth"),
+    run([Path(__file__).with_name("rvc_infer_worker.py"), "--model", RVC / "assets/weights" / (name + ".pth"),
          "--input", source.resolve(), "--output", output.resolve(),
          "--index", indexes[-1], "--pitch", pitch])
 

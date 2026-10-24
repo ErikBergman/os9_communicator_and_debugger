@@ -1,14 +1,20 @@
 import importlib.util
 import json
+import sys
 import tempfile
+import types
 import unittest
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 SPEC = importlib.util.spec_from_file_location(
     "rvc_voice", Path(__file__).resolve().parents[1] / "tools/freddi_fisk/rvc_voice.py")
 rvc = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(rvc)
+WORKER_SPEC = importlib.util.spec_from_file_location(
+    "rvc_worker", Path(__file__).resolve().parents[1] / "tools/freddi_fisk/rvc_infer_worker.py")
+worker = importlib.util.module_from_spec(WORKER_SPEC)
+WORKER_SPEC.loader.exec_module(worker)
 
 
 class TrainingInputTests(unittest.TestCase):
@@ -42,6 +48,30 @@ class TrainingInputTests(unittest.TestCase):
                 with self.assertRaisesRegex(RuntimeError, "Training input changed"):
                     rvc.prepare("freddi", False)
                 run.assert_not_called()
+
+
+class WorkerExitTests(unittest.TestCase):
+    def test_mac_worker_flushes_and_preserves_failure_status(self):
+        out, err = Mock(), Mock()
+
+        def exit_after_flush(status):
+            out.flush.assert_called_once()
+            err.flush.assert_called_once()
+            raise SystemExit(status)
+
+        cli = types.ModuleType("infer.cli")
+        cli.main = lambda: 1
+        with patch.dict(sys.modules, {"infer.cli": cli}), patch.object(sys, "platform", "darwin"), patch.object(sys, "stdout", out), patch.object(sys, "stderr", err), patch.object(worker.os, "_exit", side_effect=exit_after_flush):
+            with self.assertRaises(SystemExit) as result:
+                worker.main()
+            self.assertEqual(result.exception.code, 1)
+
+    def test_non_mac_worker_uses_normal_exit(self):
+        cli = types.ModuleType("infer.cli")
+        cli.main = lambda: 0
+        with patch.dict(sys.modules, {"infer.cli": cli}), patch.object(sys, "platform", "linux"), patch.object(worker.os, "_exit") as hard_exit:
+            self.assertEqual(worker.main(), 0)
+            hard_exit.assert_not_called()
 
 
 if __name__ == "__main__":
