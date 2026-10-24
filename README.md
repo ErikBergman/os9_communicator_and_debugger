@@ -39,6 +39,10 @@ See [inspection-tool instructions](tools/freddi_fisk/README.md),
 [inspection report](analysis/freddi-fisk/INVENTORY.md), and
 [complete inventory](analysis/freddi-fisk/inventory.json).
 
+The [Swedish voice workflow](tools/freddi_fisk/VOICE-WORKFLOW.md) extracts the
+original recordings and prepares separate Freddi/Linus datasets for local RVC
+voice conversion. See [dataset evidence](analysis/freddi-fisk/VOICE-DATASET.md).
+
 ## Checks and handover
 
 Run from the repository root:

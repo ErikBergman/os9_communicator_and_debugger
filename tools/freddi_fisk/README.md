@@ -1,5 +1,8 @@
 # Freddi Fisk inspection tools
 
+For Swedish voice extraction, separate Freddi/Linus datasets, and local RVC
+training/conversion, see [the voice workflow](VOICE-WORKFLOW.md).
+
 `inspect_freddi_image.py` reads raw Mode 1 hybrid CD images without mounting or
 writing the source. It inventories HFS and ISO 9660 files, saves exact HFS data
 and resource fork copies with Finder metadata, and verifies the original hash
