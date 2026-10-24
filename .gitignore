@@ -12,3 +12,4 @@ analysis/**/decompilation/trial-source-verification/
 analysis/**/static-fcb/*.log
 analysis/**/patches/**/*.log
 analysis/**/patches/**/*.fork
+analysis/**/voice-work/
