@@ -1,0 +1,21 @@
+# Local Apple Silicon / CPU training and inference; no WebUI or CUDA wheels.
+torch==2.4.1
+torchaudio==2.4.1
+numpy==1.26.4
+scipy==1.14.1
+librosa==0.10.2.post1
+soundfile==0.13.1
+av==15.1.0
+ffmpeg-python==0.2.0
+faiss-cpu==1.13.0
+praat-parselmouth==0.4.6
+transformers==4.49.0
+einops==0.8.1
+local-attention==1.11.2
+hyper-connections==0.4.2
+tensorboard==2.19.0
+matplotlib==3.10.1
+python-dotenv==1.1.0
+PyYAML==6.0.2
+scikit-learn==1.6.1
+setuptools==80.9.0
