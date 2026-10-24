@@ -5,6 +5,11 @@ import os
 import sys
 import traceback
 
+# PyTorch and FAISS ship different OpenMP runtimes on this Mac. Keep their
+# worker pools single-threaded for these short, interactive conversions.
+os.environ["OMP_NUM_THREADS"] = "1"
+os.environ["OPENBLAS_NUM_THREADS"] = "1"
+
 
 def main():
     status = 1

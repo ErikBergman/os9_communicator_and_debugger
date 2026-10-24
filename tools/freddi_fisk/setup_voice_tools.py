@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Install pinned voice tools into this repository's ignored .local-tools folder."""
+"""Install pinned voice tools into an isolated runtime folder."""
 
 import argparse
 import hashlib
@@ -42,33 +42,35 @@ def environment(name):
     return target / "bin/python"
 
 
-def setup():
+def setup(inference_only=False):
     if sys.version_info[:2] != (3, 12):
         raise RuntimeError("Run setup with Python 3.12 (the bundled Codex Python is suitable)")
-    LOCAL.mkdir(exist_ok=True)
+    LOCAL.mkdir(parents=True, exist_ok=True)
     rvc = checkout("rvc", "https://github.com/RVC-Project/Retrieval-based-Voice-Conversion-WebUI.git")
-    nut = checkout("nutcracker", "https://github.com/BLooperZ/nutcracker.git")
+    nut = None if inference_only else checkout("nutcracker", "https://github.com/BLooperZ/nutcracker.git")
     python = environment("rvc")
     run([python, "-m", "pip", "install", "--index-url", "https://pypi.org/simple", "-r", HERE / "rvc-requirements.txt"])
-    run([environment("nutcracker"), "-m", "pip", "install", "--index-url", "https://pypi.org/simple", nut, "click==8.1.8"])
+    if nut:
+        run([environment("nutcracker"), "-m", "pip", "install", "--index-url", "https://pypi.org/simple", nut, "click==8.1.8"])
     env = os.environ.copy()
-    env.update(HF_HOME=str(WORK / "cache/huggingface"), HF_HUB_DISABLE_XET="1")
+    env.update(HF_HOME=str(LOCAL / "cache/huggingface"), HF_HUB_DISABLE_XET="1")
     run([python, "-c",
          "import json,sys; from huggingface_hub import snapshot_download; "
          "v=json.load(open(sys.argv[1])); "
          "snapshot_download(v['model_repository'],revision=v['model_revision'],"
-         "allow_patterns=list(v['models']),local_dir=sys.argv[2])",
-         HERE / "voice-tool-versions.json", rvc / "assets"], env=env)
+         "allow_patterns=[n for n in v['models'] if sys.argv[3]!='1' or not n.startswith('pretrained_')],local_dir=sys.argv[2])",
+         HERE / "voice-tool-versions.json", rvc / "assets", "1" if inference_only else "0"], env=env)
     for name, expected in VERSIONS["models"].items():
+        if inference_only and name.startswith("pretrained_"):
+            continue
         data = (rvc / "assets" / name).read_bytes()
         if hashlib.sha256(data).hexdigest() != expected:
             raise RuntimeError(f"Model checksum mismatch: {name}")
     pitch = rvc / "assets/rmvpe/rmvpe.pt"
     pitch.parent.mkdir(exist_ok=True)
     shutil.copyfile(rvc / "assets/rmvpe.pt", pitch)
-    WORK.mkdir(parents=True, exist_ok=True)
     installed = subprocess.check_output([str(python), "-m", "pip", "freeze"], text=True)
-    (WORK / "installed-rvc-requirements.txt").write_text(installed)
+    (LOCAL / "installed-rvc-requirements.txt").write_text(installed)
     print("Voice tools installed; model checksums verified.")
 
 
@@ -91,8 +93,44 @@ def scripts():
          "decompile(Path('game/Freddi.he0'),gver=Version.he73,verbose=False,chiper_key='69',skip_transform=False)"], cwd=WORK)
 
 
+def profiles():
+    """Copy completed character models and their matching indexes to a runtime."""
+    source = ROOT / ".local-tools/rvc"
+    destination = LOCAL / "rvc"
+    if source.resolve() == destination.resolve():
+        raise ValueError("Choose a separate --runtime-root for the voice studio")
+    copied = 0
+    for speaker in ("freddi", "linus"):
+        for suffix in ("-smoke", ""):
+            experiment = f"swedish-{speaker}-v2{suffix}"
+            model = source / "assets/weights" / (experiment + ".pth")
+            indexes = sorted((source / "logs" / experiment).glob("added*.index"))
+            if not model.is_file() or not indexes:
+                continue
+            # Publish the model last, once its matching index is in place.
+            for path in [*indexes, model]:
+                target = destination / path.relative_to(source)
+                target.parent.mkdir(parents=True, exist_ok=True)
+                temporary = target.with_name(target.name + ".installing")
+                temporary.write_bytes(path.read_bytes())
+                temporary.replace(target)
+            copied += 1
+            print(f"Installed voice profile: {experiment}", flush=True)
+    if not copied:
+        raise FileNotFoundError("No completed voice models with matching indexes found")
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("action", choices=("install", "scripts"))
+    parser.add_argument("action", choices=("install", "scripts", "profiles"))
+    parser.add_argument("--runtime-root", type=Path, help="Local runtime folder, preferably outside iCloud Documents")
+    parser.add_argument("--inference-only", action="store_true", help="Skip script tools and training model downloads")
     args = parser.parse_args()
-    setup() if args.action == "install" else scripts()
+    if args.runtime_root:
+        LOCAL = args.runtime_root.expanduser().resolve()
+    if args.action == "install":
+        setup(args.inference_only)
+    elif args.action == "profiles":
+        profiles()
+    else:
+        scripts()

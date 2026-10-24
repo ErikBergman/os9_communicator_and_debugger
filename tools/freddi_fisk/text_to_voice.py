@@ -13,9 +13,9 @@ from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-WORK = ROOT / "analysis/freddi-fisk/voice-work"
 MAX_TEXT = 400
 TERMINAL = {"done", "error"}
+APP_DATA = Path.home() / "Library/Application Support/FreddiFishVoiceStudio"
 
 
 class UnavailableError(RuntimeError):
@@ -23,11 +23,15 @@ class UnavailableError(RuntimeError):
 
 
 class VoiceStudio:
-    def __init__(self, root=ROOT, renderer=None):
+    def __init__(self, root=ROOT, renderer=None, data_home=APP_DATA):
         self.root = Path(root)
-        self.rvc = self.root / ".local-tools/rvc"
-        self.output = self.root / "analysis/freddi-fisk/voice-work/studio"
-        self.python = self.root / ".local-tools/rvc-venv/bin/python"
+        self.data_home = Path(data_home)
+        runtime = self.data_home / "runtime"
+        if not (runtime / "rvc-venv/bin/python").is_file():
+            runtime = self.root / ".local-tools"
+        self.rvc = runtime / "rvc"
+        self.output = self.data_home / "recordings"
+        self.python = runtime / "rvc-venv/bin/python"
         self.ffmpeg = shutil.which("ffmpeg") or "/opt/homebrew/bin/ffmpeg"
         self.jobs = {}
         self.lock = threading.Lock()
@@ -130,20 +134,26 @@ class VoiceStudio:
     @staticmethod
     def stop_process(process):
         if process.poll() is None:
-            os.killpg(process.pid, signal.SIGTERM)
+            try:
+                os.killpg(process.pid, signal.SIGTERM)
+            except ProcessLookupError:
+                return
             try:
                 process.wait(timeout=5)
             except subprocess.TimeoutExpired:
-                os.killpg(process.pid, signal.SIGKILL)
+                try:
+                    os.killpg(process.pid, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
                 process.wait()
 
     def render(self, job, profile, rate, pitch, folder, progress):
         text = folder / "text.txt"
         text.write_text(job["text"], encoding="utf-8")
         env = os.environ.copy()
-        env.update(PYTHONPATH=str(self.rvc), RVC_AUDIO_FORCE_CPU="1", OMP_NUM_THREADS="4",
-                   MPLCONFIGDIR=str(WORK / "cache/matplotlib"),
-                   NUMBA_CACHE_DIR=str(WORK / "cache/numba"))
+        env.update(PYTHONPATH=str(self.rvc), RVC_AUDIO_FORCE_CPU="1", OMP_NUM_THREADS="1",
+                   MPLCONFIGDIR=str(self.data_home / "cache/matplotlib"),
+                   NUMBA_CACHE_DIR=str(self.data_home / "cache/numba"))
         with (folder / "engine.log").open("w") as log:
             progress("synthesizing")
             self.command(["/usr/bin/say", "-v", "Alva", "-r", rate, "-f", text,
