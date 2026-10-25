@@ -3,6 +3,10 @@
 Run from the `os9_communicator_and_debugger` repository. Everything is local.
 The game disc, preserved forks and original executable are never modified.
 
+To train the rest of the Swedish first game's cast, use the resumable batch
+runner in [TRAIN-CAST.md](TRAIN-CAST.md). It reuses the four completed voices
+and adds matching Chatterbox references for each new RVC model.
+
 RVC changes the voice of **recorded speech**. The text interface generates
 Swedish speech with **Chatterbox Multilingual**, then converts that guide with
 the selected character's separate trained RVC model. Chatterbox supplies the rhythm

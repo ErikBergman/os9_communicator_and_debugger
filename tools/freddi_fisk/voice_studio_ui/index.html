@@ -18,7 +18,7 @@
     <section class="intro">
       <span class="eyebrow">EN LITEN SVENSK RÖSTSTUDIO</span>
       <h1>Något nytt att säga.</h1>
-      <p>Skriv en mening på svenska.<br class="mobile-break"> Låt Freddi, Linus eller hajarna läsa upp den.</p>
+      <p>Skriv en mening på svenska.<br class="mobile-break"> Låt en röst från Freddi Fisk läsa upp den.</p>
     </section>
     <form id="studio" class="studio">
       <fieldset class="voice-picker">
@@ -48,6 +48,9 @@
           <span class="selection" aria-hidden="true">✓</span>
         </label>
       </fieldset>
+      <label for="cast-voice" id="cast-picker" hidden>Fler röster från första spelet
+        <select id="cast-voice"><option value="">Välj en annan figur…</option></select>
+      </label>
       <div class="text-heading"><label for="text">Vad vill du säga?</label><span id="count">0 / 400</span></div>
       <textarea id="text" name="text" rows="4" maxlength="400" required spellcheck="true" placeholder="Hej Linus! Jag tror att jag har hittat en ledtråd.">Hej Linus! Ska vi leta efter skatten?</textarea>
       <div class="prompts"><span>Prova en replik</span><button type="button" data-text="Jag tror att det finns en ledtråd här någonstans.">En ledtråd</button><button type="button" data-text="Oj! Vad var det där för något?">Något mystiskt</button><button type="button" data-text="Kom, så ger vi oss ut på ett nytt äventyr!">Ett nytt äventyr</button></div>

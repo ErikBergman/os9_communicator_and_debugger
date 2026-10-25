@@ -8,8 +8,9 @@ const audio = document.querySelector('#audio');
 let busy = false;
 let voices = {};
 const engine = document.querySelector('#engine');
+const castVoice = document.querySelector('#cast-voice');
 
-function selection() { return new FormData(form).get('speaker'); }
+function selection() { return castVoice.value || new FormData(form).get('speaker'); }
 function update() {
   const chatterbox = Boolean(voices[selection()]?.chatterbox_available);
   engine.querySelector('[value=chatterbox]').disabled = !chatterbox;
@@ -65,11 +66,31 @@ form.addEventListener('submit', async event => {
 });
 text.addEventListener('input', update);
 form.addEventListener('change', update);
+document.querySelectorAll('[name=speaker]').forEach(radio => radio.addEventListener('change', () => {
+  castVoice.value = ''; update();
+}));
+castVoice.addEventListener('change', () => {
+  const radios = [...document.querySelectorAll('[name=speaker]')];
+  if (castVoice.value) radios.forEach(radio => { radio.checked = false; });
+  else if (!radios.some(radio => radio.checked)) {
+    const first = radios.find(radio => !radio.disabled);
+    if (first) first.checked = true;
+  }
+  update();
+});
 document.querySelectorAll('[data-text]').forEach(preset => preset.addEventListener('click', () => { text.value = preset.dataset.text; update(); text.focus(); }));
 document.querySelector('#pitch').addEventListener('input', event => { const value = Number(event.target.value); document.querySelector('#pitch-value').textContent = value > 0 ? `+${value}` : String(value); });
 document.addEventListener('keydown', event => { if ((event.metaKey || event.ctrlKey) && event.key === 'Enter') { event.preventDefault(); form.requestSubmit(); } });
 request('/api/status').then(status => {
   voices = status.voices;
+  const cards = new Set([...document.querySelectorAll('[name=speaker]')].map(radio => radio.value));
+  for (const [identifier, voice] of Object.entries(voices)) {
+    if (cards.has(identifier) || !voice.available) continue;
+    const option = document.createElement('option');
+    option.value = identifier; option.textContent = `${voice.name} · ${voice.description}`;
+    castVoice.append(option);
+    document.querySelector('#cast-picker').hidden = false;
+  }
   document.querySelectorAll('[name=speaker]').forEach(radio => {
     const voice = voices[radio.value];
     radio.disabled = !voice?.available;
@@ -77,7 +98,9 @@ request('/api/status').then(status => {
   });
   if (!voices[selection()]?.available) {
     const first = document.querySelector('[name=speaker]:not(:disabled)');
-    if (first) first.checked = true; else showError('Inga röstmodeller hittades. Se startinstruktionerna för röststudion.');
+    if (first) first.checked = true;
+    else if (castVoice.options.length > 1) castVoice.value = castVoice.options[1].value;
+    else showError('Inga röstmodeller hittades. Se startinstruktionerna för röststudion.');
   }
   if (status.default_engine === 'chatterbox' && voices[selection()]?.chatterbox_available) {
     engine.value = 'chatterbox';
