@@ -5,6 +5,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import shutil
 import subprocess
 from pathlib import Path
@@ -14,6 +15,7 @@ WORK = ROOT / "analysis/freddi-fisk/voice-work"
 RVC = ROOT / ".local-tools/rvc"
 PYTHON = ROOT / ".local-tools/rvc-venv/bin/python"
 DATASET_ROOT = None
+EXPERIMENT = None
 SPEAKERS = json.loads(Path(__file__).with_name("voice-profiles.json").read_text())
 
 
@@ -31,7 +33,7 @@ def run(arguments):
 
 
 def name_for(speaker, smoke):
-    return f"swedish-{speaker}-v2" + ("-smoke" if smoke else "")
+    return (EXPERIMENT or f"swedish-{speaker}-v2") + ("-smoke" if smoke else "")
 
 
 def input_files(speaker, smoke):
@@ -140,18 +142,23 @@ def convert(speaker, smoke, source, output, pitch):
 
 
 def main():
-    global RVC, PYTHON, DATASET_ROOT
+    global RVC, PYTHON, DATASET_ROOT, EXPERIMENT
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("action", choices=("prepare", "train", "convert"))
     parser.add_argument("speaker", choices=tuple(SPEAKERS))
     parser.add_argument("--runtime-root", type=Path, help="RVC runtime root outside iCloud Documents")
     parser.add_argument("--dataset-root", type=Path, help="Folder containing per-character train directories")
+    parser.add_argument("--experiment", help="Separate model/experiment name for a controlled training run")
     parser.add_argument("--smoke", action="store_true", help="Separate three-clip plumbing test; not a usable voice model")
     parser.add_argument("--epochs", type=int, default=20, help="Total target epochs, including earlier runs")
     parser.add_argument("--input", type=Path)
     parser.add_argument("--output", type=Path)
     parser.add_argument("--pitch", type=int, default=0)
     args = parser.parse_args()
+    if args.experiment:
+        if not re.fullmatch(r"[a-z0-9][a-z0-9_-]{0,79}", args.experiment):
+            parser.error("--experiment must be a simple lowercase model name")
+        EXPERIMENT = args.experiment
     if args.runtime_root:
         runtime = args.runtime_root.expanduser().resolve()
         RVC, PYTHON = runtime / "rvc", runtime / "rvc-venv/bin/python"
