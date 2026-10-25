@@ -4,12 +4,15 @@ from pathlib import Path
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 import wave
 
 TOOLS = Path(__file__).resolve().parents[1] / "tools/freddi_fish2"
 sys.path.insert(0, str(TOOLS))
 import prepare_linus_dataset as dataset
 import compare_linus
+from check_linus_words import word_errors
+import train_linus
 sys.path.remove(str(TOOLS))
 
 
@@ -54,6 +57,61 @@ class EnglishLinusDatasetTests(unittest.TestCase):
 
 
 class LinusComparisonTests(unittest.TestCase):
+    def test_six_outputs_share_guides_and_cached_rerun_does_not_synthesize_again(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            runtime, output = root / "runtime", root / "comparison"
+            for experiment in ("swedish-linus-v2", compare_linus.ENGLISH_EXPERIMENT):
+                model = runtime / "rvc/assets/weights" / f"{experiment}.pth"
+                model.parent.mkdir(parents=True, exist_ok=True)
+                model.write_bytes(experiment.encode())
+                folder = runtime / "rvc/logs" / experiment
+                folder.mkdir(parents=True)
+                (folder / "added_test.index").write_bytes(b"index")
+                (folder / "completed-training.json").write_text(json.dumps({"epochs": 20, "model_sha256": compare_linus.digest(model)}))
+            reference = runtime / "chatterbox/references/linus.wav"
+            reference.parent.mkdir(parents=True)
+            reference.write_bytes(b"reference")
+            commands = []
+
+            class FakeStudio:
+                ffmpeg = "ffmpeg"
+
+                def close(self):
+                    pass
+
+                def command(self, arguments, log, env=None, timeout=180):
+                    args = list(map(str, arguments))
+                    commands.append(args)
+                    if args[-1] == "-":
+                        log.write(json.dumps({"input_i": "-20", "input_tp": "-4", "input_lra": "1",
+                                              "input_thresh": "-30", "target_offset": "0"}))
+                        return
+                    target = Path(args[args.index("--output") + 1]) if "--output" in args else Path(args[-1])
+                    with wave.open(str(target), "wb") as wav:
+                        wav.setparams((1, 2, 32000, 0, "NONE", "not compressed"))
+                        wav.writeframes(b"\x00\x01" * 16000)
+
+            with patch.object(compare_linus, "VoiceStudio", FakeStudio):
+                results = compare_linus.render(runtime, output)
+                rvc_calls = [args for args in commands if any("rvc_infer_worker.py" in value for value in args)]
+                self.assertEqual(len(rvc_calls), 6)
+                for number in range(3):
+                    pair = rvc_calls[number * 2:number * 2 + 2]
+                    self.assertEqual(pair[0][pair[0].index("--input") + 1], pair[1][pair[1].index("--input") + 1])
+                    self.assertIn("swedish-linus-v2.pth", pair[0][pair[0].index("--model") + 1])
+                    self.assertIn("english-linus-freddi2-v2.pth", pair[1][pair[1].index("--model") + 1])
+                self.assertEqual(len(list(output.glob("*.wav"))), 9)
+                before = len(commands)
+                self.assertEqual(compare_linus.render(runtime, output), results)
+                self.assertEqual(len(commands), before)
+
+    def test_word_check_keeps_swedish_letters_and_counts_missing_words(self):
+        expected = "På vår ö finns sju gröna sjöstjärnor."
+        self.assertEqual(word_errors(expected, expected.upper())["edits"], 0)
+        self.assertEqual(word_errors(expected, "På vår ö finns gröna sjöstjärnor.")["edits"], 1)
+        self.assertEqual(word_errors("ål", "al")["edits"], 1)
+
     def test_ab_wav_plays_swedish_model_first_then_silence_then_english_model(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
@@ -74,3 +132,34 @@ class LinusComparisonTests(unittest.TestCase):
                 wav.writeframes(b"\0\0" * 320)
             with self.assertRaisesRegex(ValueError, "Silent"):
                 compare_linus.wave_info(path)
+
+
+class EnglishLinusTrainingTests(unittest.TestCase):
+    def test_training_uses_separate_model_and_resumes_without_touching_swedish_baseline(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            runtime, work = root / "runtime", root / "work"
+            dataset_root = work / "linus-english-dataset"
+            dataset_root.mkdir(parents=True)
+            (dataset_root / "manifest.json").write_text('{}')
+            baseline = runtime / "rvc/assets/weights/swedish-linus-v2.pth"
+            baseline.parent.mkdir(parents=True)
+            baseline.write_bytes(b"native Swedish model")
+            exp = runtime / "rvc/logs" / train_linus.EXPERIMENT
+            exp.mkdir(parents=True)
+            (exp / "preparation.json").write_text('{}')
+
+            def complete(command, **kwargs):
+                self.assertEqual(command[2:4], ["train", "linus"])
+                self.assertEqual(command[-2:], ["--epochs", "20"])
+                self.assertEqual(command[command.index("--experiment") + 1], "english-linus-freddi2-v2")
+                model = baseline.parent / "english-linus-freddi2-v2.pth"
+                model.write_bytes(b"English model")
+                (exp / "added_test.index").write_bytes(b"English index")
+                (exp / "completed-training.json").write_text(json.dumps({"epochs": 20, "model_sha256": train_linus.digest(model)}))
+
+            with patch.object(train_linus.subprocess, "run", side_effect=complete) as run:
+                train_linus.train(runtime, work)
+                train_linus.train(runtime, work)
+                self.assertEqual(run.call_count, 1)
+            self.assertEqual(baseline.read_bytes(), b"native Swedish model")
