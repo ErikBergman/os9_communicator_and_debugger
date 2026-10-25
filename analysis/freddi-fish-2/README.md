@@ -2,8 +2,10 @@
 
 Branch: `codex/freddi-fish-2-swedish`, based on the completed voice studio merge
 `eaeeb5a`. The objective is to try a Swedish localization of the user's own CD,
-reusing the Swedish character voices already trained from Freddi Fish 1 and
-learning additional voices from this disc's English recordings.
+reusing character voices trained from the Swedish Freddi Fish 1 recordings.
+The English-trained Linus comparison produced an accent the user described as
+Swenglish. The chosen approach is therefore to cast sequel characters using
+the Swedish first game's voices, with Chatterbox providing Swedish delivery.
 
 ## Preserved disc and identified edition
 
@@ -61,10 +63,13 @@ values and rates are retained.
 The XOR-decoded `Freddi2.(a)` archive contains 1,516 speech markers covering all
 1,420 unique audio offsets. Every marker's resource byte count matches the
 corresponding extracted clip. Markers use byte `0x7f` around `T<offset>,<size>`.
-The decompiled room files display 462 such references covering 447 clips; the
-remaining references also require examining data tables. A regex over displayed
-dialogue alone would miss most of the audio. Speaker assignments are still to
-be audited; actor IDs and palette colours from the first game do not carry over.
+Normalizing both literal byte `0x7f` and escaped `\x7F`/`\x7f` markers in the
+decompiled files recovers all **1,516 references and 1,420 clips** too. The earlier
+462-reference/447-clip count recognized only the literal form and was an
+undercount. The dubbing catalogue independently cross-checks scripts against
+the binary archive, speech resource sizes and original PCM hashes. Speaker
+assignments still need review; actor IDs and palette colours from the first
+game do not carry over.
 
 Audio, original scripts, disc images and copied game files remain outside Git.
 
@@ -92,34 +97,32 @@ checks verify inventory hashes, source identity, refusal to overwrite output,
 partition bounds and rejection of a raw-sector input; the supplied hybrid disc
 also completed the real inspection with its source hash unchanged.
 
-## Voice feasibility and next experiment
+## Dubbing preparation
 
-English recordings can supply a new character's voice identity while a
-multilingual model supplies Swedish speech. The intended experiment is:
+The [Linus comparison](LINUS-COMPARISON.md) remains available as evidence for the
+voice decision. Full-cast Swedish FF1 training is handled by the resumable
+[cast runner](../../tools/freddi_fisk/TRAIN-CAST.md); it runs separately from
+the dialogue preparation tools.
 
-1. Match one new character's clean English clips to script/table evidence.
-2. Train a separate RVC model and index on that character's original recordings.
-3. Translate a few representative lines into Swedish. Generate guides with
-   Chatterbox Multilingual using an original character reference, and convert
-   them with the trained RVC model.
-4. Compare Chatterbox alone and Chatterbox + RVC for Swedish pronunciation,
-   speaker similarity, delivery and missing/repeated words before scaling up.
+`tools/freddi_fish2/prepare_dubbing.py` creates a complete catalogue and editable
+Swedish worksheet in `work/freddi-fish-2/dubbing/` under the app data directory.
+Each clip has a stable ID, English text variants, original duration and audio,
+archive marker/string positions, containing resource paths, script evidence and
+a Swedish voice field. Room names are **storage locations**, not a reconstruction
+of playback chronology. Five clips have differing English texts sharing one
+recording and are flagged for review. Production prefixes such as `(PU1)` remain
+in raw provenance and are omitted from the translation text.
 
-This is a cross-language experiment, not yet validated for these characters.
-Chatterbox supports Swedish and documents that a reference in another language
-can transfer its accent; its guidance suggests testing `cfg_weight=0` for that
-case. Our working first-game pipeline currently uses `0.3`. See
-[the official Chatterbox documentation](https://github.com/resemble-ai/chatterbox#original-chatterbox-tips).
-English-trained RVC may also handle Swedish-specific sounds unevenly. The
-current Swedish Freddi/Linus models can be reused for those returning voices;
-other recurring characters should be confirmed from this game's dialogue.
+Strict direct-dialogue cues suggest 502 Freddi clips and 214 Linus clips. The
+other 704 clips remain unassigned, including animation talkie tables where
+one actor can play several characters. These are hints, not approved casting.
+Four school-arrival lines have Swedish **drafts**; 1,416 lines await translation.
+The worksheet validator protects source fields, rejects unknown voice profiles
+and requires Swedish text, character and voice before a line can be approved.
+The room review pages play the original English WAVs without starting synthesis.
 
-Training does not translate the script. Completing the localization also needs
-a reviewed Swedish dialogue catalogue, font/encoding checks for å/ä/ö, safe
-resource rebuilding with updated sizes and speech references, timing checks and
-play testing. No translated game build or newly trained sequel character is
-claimed at this checkpoint.
-
-The subsequent [Linus comparison](LINUS-COMPARISON.md) completed a separate
-20-epoch English Linus model and six Swedish listening examples against the
-existing Swedish model, with shared guides and matched playback loudness.
+Next work is to review the Swedish dialogue and terminology, identify remaining
+speakers and audition the newly trained Swedish voices. After that, build a
+small in-game dubbing pilot to verify audio format, resource offsets, script
+sizes/jumps, timing, and font/encoding support for å/ä/ö before scaling up.
+No localized game build is claimed by the catalogue.

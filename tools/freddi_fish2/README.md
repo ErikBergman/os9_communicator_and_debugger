@@ -1,4 +1,59 @@
-# English-trained Linus speaking Swedish
+# Freddi Fish 2 Swedish dubbing tools
+
+The chosen voice pipeline reuses the **Swedish FF1** cast. The user rejected
+the English-trained Linus experiment below because it sounded like Swenglish.
+
+## Dialogue preparation while voices train
+
+The complete source catalogue and translation worksheet have been prepared at:
+
+```text
+~/Library/Application Support/FreddiFishVoiceStudio/work/freddi-fish-2/dubbing/
+  catalogue.json       # 1,420 clips, all 1,516 archive/script references
+  translations.csv     # editable Swedish text and casting; UTF-8 with BOM
+  review/index.html    # original English audio, grouped by storage room
+```
+
+Open `review/index.html` locally to listen to the source material. Edit only
+`character`, `voice_profile`, `swedish`, `status`, and `notes` in the CSV. The
+other fields tie each line to the original game. `voice_profile` must be one of
+the Swedish FF1 profile IDs in `tools/freddi_fisk/voice-profiles.json`. Leave it
+blank until a voice has been chosen. Status values are `pending`, `draft`, or
+`approved`; approval requires a character, voice and Swedish line.
+
+Four school-arrival lines are seeded as **drafts**, with Luther translated to
+Linus. All remaining translations and casting need review. A single recording
+can have multiple English text variants; those cases are flagged. Room groups
+are where strings are stored in the archive, not guaranteed scene order.
+
+Run from the repository, using the system Python; no AI runtime is loaded:
+
+```sh
+/usr/bin/python3 tools/freddi_fish2/prepare_dubbing.py validate
+/usr/bin/python3 tools/freddi_fish2/prepare_dubbing.py review
+```
+
+`validate` checks the worksheet and reports progress. `review` also refreshes
+the local listening pages from the CSV without changing the worksheet. To
+reproduce extraction into a **fresh** output directory:
+
+```sh
+/usr/bin/python3 tools/freddi_fish2/prepare_dubbing.py build --output /absolute/path/to/new-dubbing-folder
+```
+
+Building refuses an existing output directory to preserve translations. It
+verifies the HE99 source hashes, checks room offsets against the index, walks
+resource chunk boundaries, validates each speech marker's byte count, and
+checks every original WAV's PCM hash. Both literal and escaped decompiler
+marker forms are recognized. Files stay outside iCloud by default, and the
+tools do not use or modify active voice-training experiments.
+
+The next steps are reviewed Swedish translation, character casting using the
+new Swedish voices, then a small in-game audio/resource/timing pilot. Voice
+synthesis, archive patching and å/ä/ö font support have not been validated by
+this catalogue alone.
+
+## Archived experiment: English-trained Linus speaking Swedish
 
 This experiment compares the existing Swedish Freddi Fish 1 Linus model with a
 separate model trained on English Luther/Linus from the user's Freddi Fish 2 CD.
