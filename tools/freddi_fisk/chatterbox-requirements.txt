@@ -1,0 +1,3 @@
+# Separate environment: RVC has different PyTorch and NumPy requirements.
+chatterbox-tts==0.1.7
+soundfile==0.13.1
