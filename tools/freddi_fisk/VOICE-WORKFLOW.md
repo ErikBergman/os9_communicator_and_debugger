@@ -1,11 +1,11 @@
-# Swedish Freddi / Linus with RVC
+# Swedish character voices with Chatterbox and RVC
 
 Run from the `os9_communicator_and_debugger` repository. Everything is local.
 The game disc, preserved forks and original executable are never modified.
 
 RVC changes the voice of **recorded speech**. The text interface generates
 Swedish speech with **Chatterbox Multilingual**, then converts that guide with
-Freddi's or Linus' separate trained RVC model. Chatterbox supplies the rhythm
+the selected character's separate trained RVC model. Chatterbox supplies the rhythm
 and expression; RVC supplies the character voice. The installed macOS **Alva**
 voice remains selectable for comparison and is the default until Chatterbox
 is installed. Selecting Chatterbox never silently falls back to Alva.
@@ -18,14 +18,15 @@ Double-click `tools/freddi_fisk/Start Voice Studio.command` in Finder, or run:
 /usr/bin/python3 tools/freddi_fisk/voice_studio.py
 ```
 
-The launcher opens <http://127.0.0.1:8765>. Choose Freddi or Linus, type up to
+The launcher opens <http://127.0.0.1:8765>. Choose Freddi, Linus, Boss or
+Spongehead, type up to
 400 characters in Swedish, and press **Skapa röst**. The result can be played
 and downloaded as a WAV. Optional controls adjust the guide's tempo and the
 conversion's pitch. Keep the terminal open; Ctrl+C stops the studio and any
 active conversion. Start it from a normal macOS terminal: restricted execution
 can make `say` silently produce an empty recording.
 
-Both character models have been trained to 20 epochs on this Mac. The studio
+Freddi and Linus have been trained to 20 epochs on this Mac. The studio
 prefers completed models over the earlier three-clip previews. Voice similarity,
 pronunciation, and delivery still need listening evaluation. With Alva selected,
 its rhythm and intonation carry through the conversion.
@@ -98,6 +99,48 @@ CPU runs took approximately 67 seconds for Freddi and 44 seconds for Linus,
 producing 2.48- and 2.84-second WAVs. These checks establish that the full pipeline
 runs; naturalness, pronunciation, and voice similarity still need listening
 comparison with Alva and the original recordings.
+
+## Train and add the two sharks
+
+Boss and Spongehead use separate datasets, RVC models, retrieval indexes and
+Chatterbox references. Their source cues, clip counts and limitations are in
+[the shark dataset report](../../analysis/freddi-fisk/SHARK-VOICE-DATASET.md).
+The complete workflow runs outside iCloud Documents and uses two CPU threads:
+
+```sh
+VOICE_PYTHON=/Users/erikbergman/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3
+caffeinate -i "$VOICE_PYTHON" tools/freddi_fisk/train_sharks.py --epochs 20 --threads 2
+```
+
+This requires the already installed RVC and Chatterbox runtimes and the existing
+speech extraction/decompiled scripts. It extracts the verified shark training
+clips, installs original Swedish references into Chatterbox, prepares RVC pitch
+and content features, builds the indexes and trains both sharks sequentially.
+The Chatterbox weights stay fixed; the two RVC character models are trained.
+Do not start another copy while it runs: a lock rejects duplicate orchestration.
+
+Run the same command later to resume checkpoints or skip models already
+completed at the requested epoch target. `--epochs` is a total target, not an
+additional count. Five-epoch checkpoints and trainer logs are under
+`~/Library/Application Support/FreddiFishVoiceStudio/runtime/rvc/logs/swedish-{boss,spongehead}-v2/`.
+The exported models are in that runtime's `rvc/assets/weights/` folder.
+
+The app enables a shark after its completed model export is recorded. Restart
+the server to load updated source code, then refresh the page. No profile-copy
+command is needed for these models: training writes directly to the app's
+local runtime. Freddi and Linus retain their existing trained models.
+
+To choose a different clean original shark reference without retraining RVC:
+
+```sh
+"$VOICE_PYTHON" tools/freddi_fisk/setup_chatterbox.py references \
+  --speakers boss spongehead \
+  --dataset-root "$HOME/Library/Application Support/FreddiFishVoiceStudio/runtime/shark-datasets" \
+  --reference-boss /absolute/path/to/boss.wav \
+  --reference-spongehead /absolute/path/to/spongehead.wav
+```
+
+## Local runtime and recordings
 
 The studio binds only to the loopback interface. Text, guide audio, converted
 WAVs and diagnostic logs are stored locally in
