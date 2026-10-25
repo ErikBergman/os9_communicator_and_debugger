@@ -4,12 +4,12 @@ from pathlib import Path
 import sys
 import tempfile
 import unittest
-from unittest.mock import patch
 import wave
 
 TOOLS = Path(__file__).resolve().parents[1] / "tools/freddi_fish2"
 sys.path.insert(0, str(TOOLS))
 import prepare_linus_dataset as dataset
+import compare_linus
 sys.path.remove(str(TOOLS))
 
 
@@ -51,3 +51,26 @@ class EnglishLinusDatasetTests(unittest.TestCase):
             self.assertTrue(all('/train/' in row["file"] for row in selected if row["split"] == "train"))
             with self.assertRaises(FileExistsError):
                 dataset.prepare(speech, scripts, output, budget=5)
+
+
+class LinusComparisonTests(unittest.TestCase):
+    def test_ab_wav_plays_swedish_model_first_then_silence_then_english_model(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            for name, value in (("a.wav", b"\x01\x00"), ("b.wav", b"\x02\x00")):
+                with wave.open(str(root / name), "wb") as wav:
+                    wav.setparams((1, 2, 32000, 0, "NONE", "not compressed"))
+                    wav.writeframes(value * 320)
+            compare_linus.paired_wav(root / "a.wav", root / "b.wav", root / "ab.wav", gap_seconds=.01)
+            with wave.open(str(root / "ab.wav"), "rb") as wav:
+                self.assertEqual(wav.getnframes(), 960)
+                self.assertEqual(wav.readframes(960), b"\x01\x00" * 320 + b"\0\0" * 320 + b"\x02\x00" * 320)
+
+    def test_silent_recording_is_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "silent.wav"
+            with wave.open(str(path), "wb") as wav:
+                wav.setparams((1, 2, 32000, 0, "NONE", "not compressed"))
+                wav.writeframes(b"\0\0" * 320)
+            with self.assertRaisesRegex(ValueError, "Silent"):
+                compare_linus.wave_info(path)
