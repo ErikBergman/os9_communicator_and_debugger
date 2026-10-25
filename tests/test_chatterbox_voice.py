@@ -51,10 +51,15 @@ class ChatterboxTests(unittest.TestCase):
         self.assertEqual(writer.call_args.kwargs, {"subtype": "PCM_16"})
 
     def test_installed_chatterbox_runs_before_trained_rvc(self):
+        for speaker in ("freddi", "boss", "spongehead"):
+            with self.subTest(speaker=speaker):
+                self.check_pipeline(speaker)
+
+    def check_pipeline(self, speaker):
         with tempfile.TemporaryDirectory() as tmp, \
                 patch("text_to_voice.CHATTERBOX", {"models": {"model.pt": {"size": 5}}}):
             root = Path(tmp)
-            fake_model(root, suffix="")
+            fake_model(root, speaker=speaker, suffix="")
             studio = VoiceStudio(root, data_home=root / "app-data")
             try:
                 studio.chatterbox_python.parent.mkdir(parents=True)
@@ -63,8 +68,8 @@ class ChatterboxTests(unittest.TestCase):
                 models.mkdir(parents=True)
                 (models / "model.pt").write_bytes(b"model")
                 (studio.chatterbox / "installed.json").write_text("{}")
-                wav_file(studio.chatterbox / "references/freddi.wav")
-                self.assertTrue(studio.status()["voices"]["freddi"]["chatterbox_available"])
+                wav_file(studio.chatterbox / "references" / f"{speaker}.wav")
+                self.assertTrue(studio.status()["voices"][speaker]["chatterbox_available"])
                 calls = []
 
                 def command(arguments, log, env=None, timeout=180):
@@ -76,7 +81,7 @@ class ChatterboxTests(unittest.TestCase):
                     wav_file(output)
 
                 studio.command = command
-                job = studio.create("Hej Linus!", "freddi", rate=130, exaggeration=.9)
+                job = studio.create("Hej Linus!", speaker, rate=130, exaggeration=.9)
                 for _ in range(100):
                     job = studio.get(job["id"])
                     if job["state"] in ("done", "error"):
@@ -86,14 +91,14 @@ class ChatterboxTests(unittest.TestCase):
                 self.assertEqual(job["engine"], "chatterbox")
                 self.assertEqual(len(calls), 3)
                 self.assertIn("chatterbox_guide.py", calls[0][0][1])
-                self.assertIn(str(studio.chatterbox / "references/freddi.wav"), calls[0][0])
+                self.assertIn(str(studio.chatterbox / "references" / f"{speaker}.wav"), calls[0][0])
                 self.assertEqual(calls[0][1]["HF_HUB_OFFLINE"], "1")
                 self.assertNotIn("PYTHONPATH", calls[0][1])
                 self.assertIn("atempo=0.8125", calls[1][0])
                 self.assertIn("rvc_infer_worker.py", calls[2][0][1])
-                self.assertIn(str(studio.profiles()["freddi"]["model"]), calls[2][0])
+                self.assertIn(str(studio.profiles()[speaker]["model"]), calls[2][0])
                 # An explicitly selected Alva remains available for comparisons.
-                studio.create("Hej!", "freddi", engine="alva")
+                studio.create("Hej!", speaker, engine="alva")
             finally:
                 studio.close()
 

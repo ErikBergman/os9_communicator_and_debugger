@@ -160,6 +160,13 @@ legend,.text-heading label {
   border-color:#96b69a;
   box-shadow:0 0 0 1px #96b69a20;
 }
+.boss .selection { background:#657b8c; }
+.spongehead .selection { background:#658b92; }
+.boss:has(input:checked), .spongehead:has(input:checked) {
+  background:#edf4f6;
+  border-color:#91a7b5;
+  box-shadow:0 0 0 1px #91a7b520;
+}
 .voice-card:has(input:checked) .selection {
   display:block;
 }

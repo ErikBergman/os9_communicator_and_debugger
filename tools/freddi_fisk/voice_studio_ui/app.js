@@ -36,7 +36,7 @@ async function poll(identifier) {
     }
     if (job.state === 'error') throw new Error(job.error);
     if (job.state === 'done') return job;
-    progress.textContent = {queued:'Väntar på sin tur…', synthesizing:job.engine === 'chatterbox' ? 'Skapar naturligt svenskt tal… Det kan ta en stund.' : 'Läser din svenska replik…', converting:`Formar ${job.speaker === 'freddi' ? 'Freddis' : 'Linus'} röst…`}[job.state] || 'Skapar din replik…';
+    progress.textContent = {queued:'Väntar på sin tur…', synthesizing:job.engine === 'chatterbox' ? 'Skapar naturligt svenskt tal… Det kan ta en stund.' : 'Läser din svenska replik…', converting:`Formar rösten för ${voices[job.speaker]?.name || job.speaker}…`}[job.state] || 'Skapar din replik…';
     await new Promise(resolve => setTimeout(resolve, 750));
   }
 }
@@ -51,7 +51,7 @@ form.addEventListener('submit', async event => {
       engine:engine.value, exaggeration:Number(document.querySelector('#exaggeration').value)
     })});
     const result = await poll(job.id);
-    const name = result.speaker === 'freddi' ? 'Freddi' : 'Linus';
+    const name = voices[result.speaker]?.name || result.speaker;
     document.querySelector('#playback-title').textContent = `${name} har något att säga`;
     document.querySelector('#spoken-text').textContent = result.text;
     document.querySelector('#result').hidden = false;
@@ -70,7 +70,11 @@ document.querySelector('#pitch').addEventListener('input', event => { const valu
 document.addEventListener('keydown', event => { if ((event.metaKey || event.ctrlKey) && event.key === 'Enter') { event.preventDefault(); form.requestSubmit(); } });
 request('/api/status').then(status => {
   voices = status.voices;
-  document.querySelectorAll('[name=speaker]').forEach(radio => { radio.disabled = !voices[radio.value]?.available; });
+  document.querySelectorAll('[name=speaker]').forEach(radio => {
+    const voice = voices[radio.value];
+    radio.disabled = !voice?.available;
+    radio.closest('.voice-card').querySelector('small').textContent = voice?.available ? voice.description : 'Röstmodellen är inte klar ännu';
+  });
   if (!voices[selection()]?.available) {
     const first = document.querySelector('[name=speaker]:not(:disabled)');
     if (first) first.checked = true; else showError('Inga röstmodeller hittades. Se startinstruktionerna för röststudion.');
@@ -78,7 +82,7 @@ request('/api/status').then(status => {
   if (status.default_engine === 'chatterbox' && voices[selection()]?.chatterbox_available) {
     engine.value = 'chatterbox';
   }
-  if (Object.values(voices).every(voice => voice.available && voice.kind === 'trained')) {
+  if (Object.values(voices).filter(voice => voice.available).every(voice => voice.kind === 'trained')) {
     document.querySelector('#prototype p').textContent = 'Experimentella röster, tränade på svenska repliker från originalspelet. Röstlikhet och uttal kan variera.';
   }
   update();

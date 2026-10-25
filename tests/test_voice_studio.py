@@ -7,11 +7,13 @@ import time
 import unittest
 import wave
 from pathlib import Path
+from unittest.mock import patch
 
 TOOLS = Path(__file__).resolve().parents[1] / "tools/freddi_fisk"
 sys.path.insert(0, str(TOOLS))
 from text_to_voice import VoiceStudio
 from voice_studio import StudioServer
+import setup_voice_tools
 sys.path.remove(str(TOOLS))
 
 
@@ -23,6 +25,8 @@ def fake_model(root, speaker="freddi", suffix="-smoke"):
     experiment.mkdir(parents=True, exist_ok=True)
     (weights / (name + ".pth")).write_bytes(b"test model")
     (experiment / "added_test.index").write_bytes(b"test index")
+    if speaker in ("boss", "spongehead"):
+        (experiment / "completed-training.json").write_text('{"epochs":20}')
     python = root / ".local-tools/rvc-venv/bin/python"
     python.parent.mkdir(parents=True, exist_ok=True)
     python.touch()
@@ -50,7 +54,7 @@ class StudioTests(unittest.TestCase):
     def test_input_validation_and_local_output(self):
         for text in (None, " ", "a" * 401):
             with self.assertRaises(ValueError): self.studio.create(text, "freddi")
-        for voice in (None, "../../private", "alva"):
+        for voice in (None, "../../private", "alva", [], {}):
             with self.assertRaises(ValueError): self.studio.create("Hej", voice)
         for field, value in (("pitch", True), ("pitch", 13), ("rate", "160")):
             with self.assertRaises(ValueError): self.studio.create("Hej", "freddi", **{field: value})
@@ -82,6 +86,42 @@ class StudioTests(unittest.TestCase):
             self.assertEqual(studio.profiles()["freddi"]["model"].parents[3], local / "runtime")
         finally:
             studio.close()
+
+    def test_both_sharks_use_separate_trained_model_index_pairs(self):
+        self.assertEqual(set(self.studio.status()["voices"]), {"freddi", "linus", "boss", "spongehead"})
+        for speaker in ("boss", "spongehead"):
+            fake_model(self.root, speaker=speaker, suffix="")
+            profile = self.studio.profiles()[speaker]
+            self.assertEqual(profile["model"].stem, f"swedish-{speaker}-v2")
+            self.assertEqual(profile["index"].parent.name, f"swedish-{speaker}-v2")
+            job = self.studio.create("Här kommer hajarna!", speaker)
+            for _ in range(100):
+                job = self.studio.get(job["id"])
+                if job["state"] == "done":
+                    break
+                time.sleep(.01)
+            self.assertEqual(job["state"], "done", job)
+            self.assertEqual(job["speaker"], speaker)
+            self.assertEqual(job["model_kind"], "trained")
+
+    def test_shark_is_unavailable_until_training_export_is_complete(self):
+        fake_model(self.root, speaker="boss", suffix="")
+        record = self.root / ".local-tools/rvc/logs/swedish-boss-v2/completed-training.json"
+        record.unlink()
+        self.assertFalse(self.studio.status()["voices"]["boss"]["available"])
+
+    def test_copying_shark_profile_preserves_completion_record(self):
+        fake_model(self.root, speaker="boss", suffix="")
+        fake_model(self.root, speaker="spongehead", suffix="")
+        record = self.root / ".local-tools/rvc/logs/swedish-spongehead-v2/completed-training.json"
+        record.unlink()
+        destination = self.root / "installed"
+        with patch.object(setup_voice_tools, "ROOT", self.root), \
+                patch.object(setup_voice_tools, "LOCAL", destination):
+            setup_voice_tools.profiles()
+        copied = destination / "rvc/logs/swedish-boss-v2/completed-training.json"
+        self.assertEqual(json.loads(copied.read_text())["epochs"], 20)
+        self.assertFalse((destination / "rvc/assets/weights/swedish-spongehead-v2.pth").exists())
 
 
 class HTTPTests(unittest.TestCase):

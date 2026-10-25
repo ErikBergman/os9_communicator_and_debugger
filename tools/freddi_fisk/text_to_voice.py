@@ -17,6 +17,7 @@ MAX_TEXT = 400
 TERMINAL = {"done", "error"}
 APP_DATA = Path.home() / "Library/Application Support/FreddiFishVoiceStudio"
 CHATTERBOX = json.loads(Path(__file__).with_name("chatterbox-versions.json").read_text())
+SPEAKERS = json.loads(Path(__file__).with_name("voice-profiles.json").read_text())
 
 
 class UnavailableError(RuntimeError):
@@ -45,27 +46,32 @@ class VoiceStudio:
 
     def profiles(self):
         profiles = {}
-        for speaker, name in (("freddi", "Freddi"), ("linus", "Linus")):
+        for speaker, specification in SPEAKERS.items():
             for suffix, kind in (("", "trained"), ("-smoke", "preview")):
                 experiment = f"swedish-{speaker}-v2{suffix}"
                 model = self.rvc / "assets/weights" / (experiment + ".pth")
                 indexes = sorted((self.rvc / "logs" / experiment).glob("added*.index"))
+                if specification.get("requires_training_record") and not (
+                        self.rvc / "logs" / experiment / "completed-training.json").is_file():
+                    continue
                 if model.is_file() and indexes:
-                    profiles[speaker] = {"name": name, "kind": kind, "model": model,
+                    profiles[speaker] = {"name": specification["name"], "kind": kind, "model": model,
                                          "index": indexes[-1]}
                     break
         return profiles
 
     def status(self):
         profiles = self.profiles()
-        ready = {speaker: self.chatterbox_ready(speaker) for speaker in ("freddi", "linus")}
+        ready = {speaker: self.chatterbox_ready(speaker) for speaker in SPEAKERS}
         return {"max_text": MAX_TEXT, "default_engine": "chatterbox" if any(ready.values()) else "alva",
                 "engines": {"alva": {"available": True},
                             "chatterbox": {"available": any(ready.values())}}, "voices": {
-            speaker: {"name": speaker.title(), "available": speaker in profiles,
+            speaker: {"name": SPEAKERS[speaker]["name"], "available": speaker in profiles,
+                      "description": SPEAKERS[speaker]["description"],
+                      "group": SPEAKERS[speaker]["group"],
                       "kind": profiles.get(speaker, {}).get("kind", "missing"),
                       "chatterbox_available": ready[speaker]}
-            for speaker in ("freddi", "linus")}}
+            for speaker in SPEAKERS}}
 
     def chatterbox_ready(self, speaker):
         if not self.chatterbox_python.is_file() or not (self.chatterbox / "installed.json").is_file():
@@ -79,8 +85,8 @@ class VoiceStudio:
     def create(self, text, speaker, rate=160, pitch=0, engine=None, exaggeration=0.6):
         if not isinstance(text, str) or not text.strip() or len(text.strip()) > MAX_TEXT:
             raise ValueError(f"Skriv mellan 1 och {MAX_TEXT} tecken.")
-        if speaker not in ("freddi", "linus"):
-            raise ValueError("Välj Freddi eller Linus.")
+        if not isinstance(speaker, str) or speaker not in SPEAKERS:
+            raise ValueError("Välj en av rösterna i studion.")
         if type(rate) is not int or rate not in (130, 160, 190):
             raise ValueError("Ogiltigt taltempo.")
         if type(pitch) is not int or not -12 <= pitch <= 12:
