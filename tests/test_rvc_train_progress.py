@@ -44,19 +44,15 @@ class ProgressTests(unittest.TestCase):
 
     def test_resumed_subprocess_updates_bars_and_retains_raw_output(self):
         with tempfile.TemporaryDirectory() as tmp:
-            path = Path(tmp) / "train.log"
+            path = Path(tmp) / "training-console.log"
             path.write_text("====> Epoch: 20 stale\n")
             output = io.StringIO()
             console = Console(file=output, force_terminal=True, color_system=None, width=120)
             script = (
-                "import pathlib,time; p=pathlib.Path('train.log'); "
-                "f=p.open('a'); "
-                "f.write('Training epoch: 5 [50%]\\n'); f.flush(); time.sleep(.05); "
-                "f.write('====> Epoch: 5 time=00:01\\n'); f.close(); print('raw diagnostic')"
+                "import time; "
+                "print('Training epoch: 5 [50%]', flush=True); time.sleep(.05); "
+                "print('====> Epoch: 5 time=00:01', flush=True); print('raw diagnostic')"
             )
-            # The real wrapper runs from RVC's directory; use an absolute log
-            # path here so the test never changes the runner's working directory.
-            script = script.replace("pathlib.Path('train.log')", f"pathlib.Path({str(path)!r})")
             status = display.monitor([sys.executable, "-c", script], tmp, 10,
                                      "Linus", console, poll_interval=.01)
             self.assertEqual(status, 0)
@@ -64,6 +60,12 @@ class ProgressTests(unittest.TestCase):
             self.assertIn("50%", output.getvalue())
             self.assertNotIn("epoch 20", output.getvalue())
             self.assertIn("raw diagnostic", (Path(tmp) / "training-console.log").read_text())
+
+    def test_eta_excludes_resumed_epochs_and_uses_current_pace(self):
+        estimate = display.completion_estimate(20, 6, 5, 120, 300)
+        self.assertEqual(estimate, "~28m remaining (live pace)")
+        self.assertEqual(display.completion_estimate(20, 5.25, 5.25, 0, 195),
+                         "~48m remaining (previous epoch)")
 
     def test_failure_keeps_exit_status_and_prints_diagnostics(self):
         with tempfile.TemporaryDirectory() as tmp:
