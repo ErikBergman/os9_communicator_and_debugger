@@ -197,7 +197,7 @@ class VoiceStudio:
                               self.chatterbox / "references" / f"{job['speaker']}.wav",
                               "--model-dir", self.chatterbox / "models",
                               "--output", guide, "--exaggeration", job["exaggeration"],
-                              "--device", os.environ.get("VOICE_CHATTERBOX_DEVICE", "auto")],
+                              "--device", os.environ.get("VOICE_CHATTERBOX_DEVICE", "cpu")],
                              log, env=chatterbox_env, timeout=900)
                 tempo = ["-af", f"atempo={rate / 160:.4f}"]
             else:

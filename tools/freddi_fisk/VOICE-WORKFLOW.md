@@ -54,11 +54,13 @@ Once installed, the studio selects **Chatterbox + RVC** automatically. Expand
 **Naturligt**, or **Livligt** expression. Tempo and pitch remain adjustable.
 Requests always finish with the selected character's RVC model and matching
 retrieval index. Chatterbox generation runs in a separate process that exits
-before RVC starts, releasing its memory. It automatically uses Apple MPS when
-available and otherwise the CPU. For a CPU comparison:
+before RVC starts, releasing its memory. CPU generation with two threads is the
+default: Apple MPS was detected on this Mac but failed during audio decoding
+with a Metal compiler-service error. To experiment with GPU acceleration on a
+Mac where the Metal backend works:
 
 ```sh
-VOICE_CHATTERBOX_DEVICE=cpu /usr/bin/python3 tools/freddi_fisk/voice_studio.py
+VOICE_CHATTERBOX_DEVICE=mps /usr/bin/python3 tools/freddi_fisk/voice_studio.py
 ```
 
 Setup chooses one 3–10 second original Swedish **training** clip per character
@@ -89,6 +91,13 @@ The original Chatterbox guide is retained as `chatterbox.wav` beside the final
 
 Upstream APIs and Swedish support: [Chatterbox](https://github.com/resemble-ai/chatterbox)
 and [official model files](https://huggingface.co/ResembleAI/chatterbox).
+
+Local validation on 2026-10-25: both trained character profiles completed
+Chatterbox → guide resampling → RVC for “Hej Linus! Ska vi leta efter skatten?”.
+CPU runs took approximately 67 seconds for Freddi and 44 seconds for Linus,
+producing 2.48- and 2.84-second WAVs. These checks establish that the full pipeline
+runs; naturalness, pronunciation, and voice similarity still need listening
+comparison with Alva and the original recordings.
 
 The studio binds only to the loopback interface. Text, guide audio, converted
 WAVs and diagnostic logs are stored locally in

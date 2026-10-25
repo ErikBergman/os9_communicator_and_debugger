@@ -20,7 +20,7 @@ def main():
     parser.add_argument("--model-dir", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--exaggeration", type=float, default=0.6)
-    parser.add_argument("--device", choices=("auto", "cpu", "mps"), default="auto")
+    parser.add_argument("--device", choices=("auto", "cpu", "mps"), default="cpu")
     args = parser.parse_args()
     if not 0 <= args.exaggeration <= 1.5:
         parser.error("Expression must be between 0 and 1.5")
