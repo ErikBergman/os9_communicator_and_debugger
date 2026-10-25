@@ -107,7 +107,8 @@ def stop_training(process):
         pass
 
 
-def monitor(command, folder, epochs, speaker, console=None, poll_interval=.2):
+def monitor(command, folder, epochs, speaker, console=None, poll_interval=.2,
+            pause_file=None, save_every=5):
     console = console or Console()
     folder = Path(folder)
     folder.mkdir(parents=True, exist_ok=True)
@@ -137,8 +138,13 @@ def monitor(command, folder, epochs, speaker, console=None, poll_interval=.2):
                 current = progress.add_task("Current epoch", total=100, visible=False, eta="")
                 started, last_epoch, latest = False, 0, 0.0
                 baseline, training_started = 0.0, None
+                pause_announced = False
                 while True:
                     status = process.poll()
+                    pausing = pause_file is not None and Path(pause_file).exists()
+                    if pausing and not pause_announced:
+                        console.print("Pause requested. Finishing the next saved epoch…", markup=False)
+                        pause_announced = True
                     for line in tail.read():
                         event = parse_progress(line, epochs)
                         if event is None:
@@ -165,6 +171,12 @@ def monitor(command, folder, epochs, speaker, console=None, poll_interval=.2):
                         progress.update(current, completed=percent,
                                         description=f"Epoch {epoch}")
                         if finished:
+                            # The pinned trainer emits this record AFTER writing
+                            # both checkpoints. Do not interrupt a checkpoint write.
+                            if pausing and epoch % save_every == 0 and epoch < epochs:
+                                stop_training(process)
+                                console.print(f"Paused after epoch {epoch}; checkpoint saved.", markup=False)
+                                return 75
                             if not console.is_terminal:
                                 console.print(f"Epoch {epoch}/{epochs} complete", markup=False)
                             if epoch == epochs:
@@ -190,13 +202,16 @@ def main():
     parser.add_argument("--folder", type=Path, required=True)
     parser.add_argument("--speaker", required=True)
     parser.add_argument("--epochs", type=int, required=True)
+    parser.add_argument("--pause-file", type=Path)
+    parser.add_argument("--save-every", type=int, default=5)
     parser.add_argument("command", nargs=argparse.REMAINDER)
     args = parser.parse_args()
     command = args.command[1:] if args.command[:1] == ["--"] else args.command
-    if not command or args.epochs < 1:
+    if not command or args.epochs < 1 or args.save_every < 1:
         parser.error("A trainer command and positive epoch target are required")
     try:
-        return monitor([sys.executable, *command], args.folder, args.epochs, args.speaker)
+        return monitor([sys.executable, *command], args.folder, args.epochs, args.speaker,
+                       pause_file=args.pause_file, save_every=args.save_every)
     except KeyboardInterrupt:
         Console().print("Training interrupted. Resume from the latest saved checkpoint.")
         return 130

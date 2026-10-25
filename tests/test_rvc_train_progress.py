@@ -1,5 +1,6 @@
 import importlib.util
 import io
+import os
 import sys
 import tempfile
 import unittest
@@ -87,6 +88,30 @@ class ProgressTests(unittest.TestCase):
                     display.monitor([sys.executable, "-c", "import time; time.sleep(30)"],
                                     tmp, 20, "Freddi", console)
                 self.assertIsNotNone(stop.call_args.args[0].poll())
+
+    def test_pause_waits_for_saved_epoch_and_stops_the_worker_group(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = Path(tmp)
+            pause = folder / "pause"
+            pause.touch()
+            script = (
+                "import subprocess,sys,signal; from pathlib import Path; "
+                "p=subprocess.Popen([sys.executable,'-c','import time; time.sleep(30)']); "
+                "signal.signal(signal.SIGINT,lambda *args:(p.wait(),sys.exit(130))); "
+                f"Path({str(folder / 'pid')!r}).write_text(str(p.pid)); "
+                f"Path({str(folder / 'G.pth')!r}).write_text('saved generator'); "
+                f"Path({str(folder / 'D.pth')!r}).write_text('saved discriminator'); "
+                "print('====> Epoch: 1 saved',flush=True); p.wait()"
+            )
+            output = io.StringIO()
+            status = display.monitor([sys.executable, "-c", script], folder, 20, "Cast",
+                                     Console(file=output), .01, pause_file=pause, save_every=1)
+            self.assertEqual(status, 75)
+            self.assertEqual((folder / "G.pth").read_text(), "saved generator")
+            self.assertEqual((folder / "D.pth").read_text(), "saved discriminator")
+            self.assertIn("Paused after epoch 1", output.getvalue())
+            with self.assertRaises(ProcessLookupError):
+                os.kill(int((folder / "pid").read_text()), 0)
 
 
 if __name__ == "__main__":

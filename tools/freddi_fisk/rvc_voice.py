@@ -8,6 +8,7 @@ import os
 import re
 import shutil
 import subprocess
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -16,6 +17,7 @@ RVC = ROOT / ".local-tools/rvc"
 PYTHON = ROOT / ".local-tools/rvc-venv/bin/python"
 DATASET_ROOT = None
 EXPERIMENT = None
+ALLOW_SMALL_DATASET = False
 SPEAKERS = json.loads(Path(__file__).with_name("voice-profiles.json").read_text())
 
 
@@ -38,7 +40,7 @@ def name_for(speaker, smoke):
 
 def input_files(speaker, smoke):
     files = sorted(((DATASET_ROOT or WORK / "datasets") / speaker / "train").glob("*.wav"))
-    if len(files) < 3:
+    if len(files) < (1 if ALLOW_SMALL_DATASET else 3):
         raise ValueError("Need at least three training clips; run dataset preparation first")
     if smoke:
         files = files[:3]
@@ -98,7 +100,7 @@ def prepare(speaker, smoke):
     print(json.dumps(report, indent=2))
 
 
-def train(speaker, smoke, epochs):
+def train(speaker, smoke, epochs, save_every=5, pause_file=None):
     name = name_for(speaker, smoke)
     exp = RVC / "logs" / name
     if not (exp / "preparation.json").is_file():
@@ -112,10 +114,14 @@ def train(speaker, smoke, epochs):
     (RVC / "assets/weights").mkdir(parents=True, exist_ok=True)
     model = RVC / "assets/weights" / (name + ".pth")
     before = model.stat().st_mtime_ns if model.exists() else None
-    run([Path(__file__).with_name("rvc_train_progress.py"), "--folder", exp,
-         "--speaker", speaker.title(), "--epochs", epochs, "--",
+    progress_args = [Path(__file__).with_name("rvc_train_progress.py"), "--folder", exp,
+                     "--speaker", SPEAKERS[speaker]["name"], "--epochs", epochs,
+                     "--save-every", save_every]
+    if pause_file:
+        progress_args.extend(["--pause-file", pause_file])
+    run([*progress_args, "--",
          "-m", "train.train", "-e", name, "-sr", "32k", "-f0", 1,
-         "-bs", 1, "-g", "", "-te", epochs, "-se", min(5, epochs),
+         "-bs", 1, "-g", "", "-te", epochs, "-se", min(save_every, epochs),
          "-pg", "assets/pretrained_v2/f0G32k.pth", "-pd", "assets/pretrained_v2/f0D32k.pth",
          "-l", 1, "-c", 0, "-sw", 0, "-v", "v2"])
     # Upstream can return success even if a child training process failed.
@@ -142,7 +148,7 @@ def convert(speaker, smoke, source, output, pitch):
 
 
 def main():
-    global RVC, PYTHON, DATASET_ROOT, EXPERIMENT
+    global RVC, PYTHON, DATASET_ROOT, EXPERIMENT, ALLOW_SMALL_DATASET
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("action", choices=("prepare", "train", "convert"))
     parser.add_argument("speaker", choices=tuple(SPEAKERS))
@@ -151,10 +157,14 @@ def main():
     parser.add_argument("--experiment", help="Separate model/experiment name for a controlled training run")
     parser.add_argument("--smoke", action="store_true", help="Separate three-clip plumbing test; not a usable voice model")
     parser.add_argument("--epochs", type=int, default=20, help="Total target epochs, including earlier runs")
+    parser.add_argument("--save-every", type=int, default=5, help="Checkpoint interval in epochs")
+    parser.add_argument("--pause-file", type=Path, help="Pause after a saved epoch when this file exists")
+    parser.add_argument("--allow-small-dataset", action="store_true", help="Permit experimental voices with fewer than three source clips")
     parser.add_argument("--input", type=Path)
     parser.add_argument("--output", type=Path)
     parser.add_argument("--pitch", type=int, default=0)
     args = parser.parse_args()
+    ALLOW_SMALL_DATASET = args.allow_small_dataset
     if args.experiment:
         if not re.fullmatch(r"[a-z0-9][a-z0-9_-]{0,79}", args.experiment):
             parser.error("--experiment must be a simple lowercase model name")
@@ -164,15 +174,20 @@ def main():
         RVC, PYTHON = runtime / "rvc", runtime / "rvc-venv/bin/python"
     if args.dataset_root:
         DATASET_ROOT = args.dataset_root.expanduser().resolve()
-    if args.epochs < 1:
-        parser.error("--epochs must be positive")
+    if args.epochs < 1 or args.save_every < 1:
+        parser.error("--epochs and --save-every must be positive")
     if args.action == "prepare":
         prepare(args.speaker, args.smoke)
     elif args.action == "train":
-        train(args.speaker, args.smoke, args.epochs)
+        train(args.speaker, args.smoke, args.epochs, args.save_every, args.pause_file)
     else:
         convert(args.speaker, args.smoke, args.input, args.output, args.pitch)
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except subprocess.CalledProcessError as error:
+        if error.returncode != 75:
+            raise
+        sys.exit(75)
