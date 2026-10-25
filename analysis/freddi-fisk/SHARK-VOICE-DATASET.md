@@ -67,3 +67,28 @@ models and records successful exports. A completion record gates each shark's
 availability in the app. It refuses a second concurrent orchestration and skips
 completed models with matching hashes on later runs. See
 [the voice workflow](../../tools/freddi_fisk/VOICE-WORKFLOW.md) for commands.
+
+## Completed local verification
+
+Both full models completed all 20 epochs on 25 October 2026. Boss prepared 25
+complete training segments from its 20 source clips; Spongehead prepared 32
+from its 23 clips. Neither preparation excluded an incomplete segment. The
+exported models are approximately 53.7 MiB each, and their SHA-256 hashes match
+their completion records. Each has its own matching FAISS index.
+
+The new sentence “Nu är det hajarnas tur att prata svenska.” completed
+Chatterbox → guide resampling → trained RVC for both sharks:
+
+| Character | CPU pipeline time | Final WAV duration |
+| --- | ---: | ---: |
+| Boss | about 56s | 4.06s |
+| Spongehead | about 47s | 2.42s |
+
+Both outputs contain nonzero 16-bit audio. The app reports all four characters
+as trained and available with Chatterbox, and both shark selections were
+checked in the interface. These are execution checks; pronunciation,
+naturalness and character similarity still require listening evaluation.
+The original Chatterbox guides, final WAVs, engine logs and job metadata are
+retained in the local recordings folder. The ignored
+`voice-work/shark-pipeline-validation.json` records job identifiers, timings,
+output paths and model hashes.

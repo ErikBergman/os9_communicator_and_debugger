@@ -26,7 +26,7 @@ conversion's pitch. Keep the terminal open; Ctrl+C stops the studio and any
 active conversion. Start it from a normal macOS terminal: restricted execution
 can make `say` silently produce an empty recording.
 
-Freddi and Linus have been trained to 20 epochs on this Mac. The studio
+All four character models have been trained to 20 epochs on this Mac. The studio
 prefers completed models over the earlier three-clip previews. Voice similarity,
 pronunciation, and delivery still need listening evaluation. With Alva selected,
 its rhythm and intonation carry through the conversion.
@@ -129,6 +129,12 @@ The app enables a shark after its completed model export is recorded. Restart
 the server to load updated source code, then refresh the page. No profile-copy
 command is needed for these models: training writes directly to the app's
 local runtime. Freddi and Linus retain their existing trained models.
+
+Completed on this Mac on 2026-10-25: both sharks trained to 20 epochs and
+generated new Swedish sentences through Chatterbox and their trained RVC
+models. Short CPU checks took approximately 56 seconds for Boss and 47 seconds
+for Spongehead. Their small source datasets make listening comparison
+particularly important; see the report for the actual clip counts.
 
 To choose a different clean original shark reference without retraining RVC:
 
