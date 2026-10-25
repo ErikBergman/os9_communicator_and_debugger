@@ -87,7 +87,8 @@ class Handler(BaseHTTPRequestHandler):
             if not isinstance(data, dict):
                 raise ValueError("Förfrågan måste innehålla text och röstval.")
             job = self.server.studio.create(data.get("text"), data.get("speaker"),
-                                            data.get("rate", 160), data.get("pitch", 0))
+                                            data.get("rate", 160), data.get("pitch", 0),
+                                            data.get("engine"), data.get("exaggeration", 0.6))
             self.send(202, job)
         except (ValueError, UnicodeDecodeError) as error:
             self.send(400, {"error": str(error)})

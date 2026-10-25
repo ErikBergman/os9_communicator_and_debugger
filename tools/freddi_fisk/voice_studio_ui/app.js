@@ -7,9 +7,14 @@ const playback = document.querySelector('.playback');
 const audio = document.querySelector('#audio');
 let busy = false;
 let voices = {};
+const engine = document.querySelector('#engine');
 
 function selection() { return new FormData(form).get('speaker'); }
 function update() {
+  const chatterbox = Boolean(voices[selection()]?.chatterbox_available);
+  engine.querySelector('[value=chatterbox]').disabled = !chatterbox;
+  if (engine.value === 'chatterbox' && !chatterbox) engine.value = 'alva';
+  document.querySelector('#exaggeration').disabled = engine.value !== 'chatterbox';
   document.querySelector('#count').textContent = `${text.value.length} / 400`;
   button.disabled = busy || !text.value.trim() || !voices[selection()]?.available;
 }
@@ -31,7 +36,7 @@ async function poll(identifier) {
     }
     if (job.state === 'error') throw new Error(job.error);
     if (job.state === 'done') return job;
-    progress.textContent = {queued:'Väntar på sin tur…', synthesizing:'Läser din svenska replik…', converting:`Formar ${job.speaker === 'freddi' ? 'Freddis' : 'Linus'} röst…`}[job.state] || 'Skapar din replik…';
+    progress.textContent = {queued:'Väntar på sin tur…', synthesizing:job.engine === 'chatterbox' ? 'Skapar naturligt svenskt tal… Det kan ta en stund.' : 'Läser din svenska replik…', converting:`Formar ${job.speaker === 'freddi' ? 'Freddis' : 'Linus'} röst…`}[job.state] || 'Skapar din replik…';
     await new Promise(resolve => setTimeout(resolve, 750));
   }
 }
@@ -42,7 +47,8 @@ form.addEventListener('submit', async event => {
   progress.textContent = 'Förbereder din replik…';
   try {
     const job = await request('/api/jobs', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({
-      text:text.value.trim(), speaker:selection(), rate:Number(document.querySelector('#rate').value), pitch:Number(document.querySelector('#pitch').value)
+      text:text.value.trim(), speaker:selection(), rate:Number(document.querySelector('#rate').value), pitch:Number(document.querySelector('#pitch').value),
+      engine:engine.value, exaggeration:Number(document.querySelector('#exaggeration').value)
     })});
     const result = await poll(job.id);
     const name = result.speaker === 'freddi' ? 'Freddi' : 'Linus';
@@ -68,6 +74,9 @@ request('/api/status').then(status => {
   if (!voices[selection()]?.available) {
     const first = document.querySelector('[name=speaker]:not(:disabled)');
     if (first) first.checked = true; else showError('Inga röstmodeller hittades. Se startinstruktionerna för röststudion.');
+  }
+  if (status.default_engine === 'chatterbox' && voices[selection()]?.chatterbox_available) {
+    engine.value = 'chatterbox';
   }
   if (Object.values(voices).every(voice => voice.available && voice.kind === 'trained')) {
     document.querySelector('#prototype p').textContent = 'Experimentella röster, tränade på svenska repliker från originalspelet. Röstlikhet och uttal kan variera.';

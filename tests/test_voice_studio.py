@@ -134,6 +134,10 @@ class HTTPTests(unittest.TestCase):
         self.assertEqual(self.request("POST", "/api/jobs", '{}', {"Content-Type": "text/plain"})[0], 415)
         status, _, _ = self.request("POST", "/api/jobs", json.dumps({"text": "Hej", "speaker": "linus"}), {"Content-Type": "application/json"})
         self.assertEqual(status, 503)
+        for engine, expected in (("chatterbox", 503), ("unknown", 400)):
+            body = json.dumps({"text": "Hej", "speaker": "freddi", "engine": engine})
+            self.assertEqual(self.request("POST", "/api/jobs", body,
+                             {"Content-Type": "application/json"})[0], expected)
 
 
 if __name__ == "__main__":

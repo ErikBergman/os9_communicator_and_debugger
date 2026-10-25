@@ -3,9 +3,12 @@
 Run from the `os9_communicator_and_debugger` repository. Everything is local.
 The game disc, preserved forks and original executable are never modified.
 
-RVC changes the voice of **recorded speech**. The text interface first reads
-your Swedish sentence with the installed macOS **Alva** voice, then converts
-that guide recording with Freddi's or Linus' separate RVC model.
+RVC changes the voice of **recorded speech**. The text interface generates
+Swedish speech with **Chatterbox Multilingual**, then converts that guide with
+Freddi's or Linus' separate trained RVC model. Chatterbox supplies the rhythm
+and expression; RVC supplies the character voice. The installed macOS **Alva**
+voice remains selectable for comparison and is the default until Chatterbox
+is installed. Selecting Chatterbox never silently falls back to Alva.
 
 ## Type a sentence in the local interface
 
@@ -22,12 +25,68 @@ conversion's pitch. Keep the terminal open; Ctrl+C stops the studio and any
 active conversion. Start it from a normal macOS terminal: restricted execution
 can make `say` silently produce an empty recording.
 
-**Current voices are previews:** each was trained for one epoch on three clips
-to verify the pipeline. The full character datasets have been prepared but
-full training has not completed. More training and listening evaluation are
-needed before calling these convincing copies of the original voices. Alva
-also supplies the pacing and expression, so generated delivery differs from
-the original actors' performances.
+Both character models have been trained to 20 epochs on this Mac. The studio
+prefers completed models over the earlier three-clip previews. Voice similarity,
+pronunciation, and delivery still need listening evaluation. With Alva selected,
+its rhythm and intonation carry through the conversion.
+
+## Chatterbox + trained RVC
+
+The existing RVC models need no retraining. Install Chatterbox into its own
+Python environment outside iCloud Documents, alongside the existing studio
+runtime. Use Python 3.12:
+
+```sh
+VOICE_PYTHON=/Users/erikbergman/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3
+"$VOICE_PYTHON" tools/freddi_fisk/setup_chatterbox.py install
+/usr/bin/python3 tools/freddi_fisk/voice_studio.py
+```
+
+Setup installs `chatterbox-tts==0.1.7` and the stable Multilingual v2 checkpoint
+at the revision recorded in `chatterbox-versions.json`. Its models require about
+3.2 GB plus the Python environment. The separate environment keeps Chatterbox's
+PyTorch and NumPy dependencies from replacing the working RVC dependencies.
+Large weight downloads are verified against their published SHA-256 hashes.
+Exact installed package versions are saved in `chatterbox/installed-requirements.txt`.
+
+Once installed, the studio selects **Chatterbox + RVC** automatically. Expand
+**Justera rösten** to compare it with **Alva + RVC**, or select **Lugnt**,
+**Naturligt**, or **Livligt** expression. Tempo and pitch remain adjustable.
+Requests always finish with the selected character's RVC model and matching
+retrieval index. Chatterbox generation runs in a separate process that exits
+before RVC starts, releasing its memory. It automatically uses Apple MPS when
+available and otherwise the CPU. For a CPU comparison:
+
+```sh
+VOICE_CHATTERBOX_DEVICE=cpu /usr/bin/python3 tools/freddi_fisk/voice_studio.py
+```
+
+Setup chooses one 3–10 second original Swedish **training** clip per character
+from the existing dataset manifest, preferring a duration near eight seconds.
+No new character recordings are needed. These references supply Chatterbox's
+speaker/style conditioning; they are not additional training. Listen to them
+under `~/Library/Application Support/FreddiFishVoiceStudio/runtime/chatterbox/references/`.
+The choices and original paths are recorded in `references.json`. Selection is
+automatic, not a listening audit; another existing clean clip may work better.
+To replace a reference without reinstalling models:
+
+```sh
+"$VOICE_PYTHON" tools/freddi_fisk/setup_chatterbox.py references \
+  --reference-freddi /absolute/path/to/a/clean-freddi-clip.wav \
+  --reference-linus /absolute/path/to/a/clean-linus-clip.wav
+```
+
+Existing reference choices are preserved unless explicitly replaced. The
+installer accepts `--runtime-root` for another runtime location. To verify
+model files again, run `setup_chatterbox.py check` with the same Python.
+Synthesis uses local weights with Hugging Face offline mode enabled. Downloads
+happen only during setup. A first generation may take several minutes; its
+limit is 15 minutes, followed by the existing three-minute RVC conversion limit.
+The original Chatterbox guide is retained as `chatterbox.wav` beside the final
+`voice.wav`, so you can compare expression before and after conversion.
+
+Upstream APIs and Swedish support: [Chatterbox](https://github.com/resemble-ai/chatterbox)
+and [official model files](https://huggingface.co/ResembleAI/chatterbox).
 
 The studio binds only to the loopback interface. Text, guide audio, converted
 WAVs and diagnostic logs are stored locally in
