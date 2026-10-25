@@ -27,6 +27,11 @@ def main():
     # Models are installed explicitly; synthesis never starts a model download.
     os.environ.update(HF_HUB_OFFLINE="1", TRANSFORMERS_OFFLINE="1",
                       PYTORCH_ENABLE_MPS_FALLBACK="1")
+    os.environ.setdefault("PKUSEG_HOME", str(args.model_dir.parent / "cache/pkuseg"))
+    tokenizer_cache = Path(os.environ["PKUSEG_HOME"])
+    if not (tokenizer_cache / "spacy_ontonotes.zip").is_file() or not (
+            tokenizer_cache / "spacy_ontonotes").is_dir():
+        parser.error("Tokenizer cache is missing; rerun setup_chatterbox.py install")
     import soundfile
     import torch
     from chatterbox.mtl_tts import ChatterboxMultilingualTTS

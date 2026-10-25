@@ -1,3 +1,5 @@
 # Separate environment: RVC has different PyTorch and NumPy requirements.
 chatterbox-tts==0.1.7
 soundfile==0.13.1
+# Perth's packaged watermark loader still uses pkg_resources.
+setuptools==80.9.0

@@ -83,6 +83,7 @@ def install(runtime, overrides):
     if shutil.disk_usage(runtime).free < missing + 2 * 1024**3:
         raise RuntimeError("Not enough free disk space for Chatterbox models and Python tools")
     install_references(runtime, overrides)
+    (runtime / "chatterbox/installed.json").unlink(missing_ok=True)
     environment = runtime / "chatterbox-venv"
     if not environment.exists():
         venv.EnvBuilder(with_pip=True).create(environment)
@@ -92,7 +93,7 @@ def install(runtime, overrides):
          "https://pypi.org/simple", "-r", HERE / "chatterbox-requirements.txt"])
     env = os.environ.copy()
     env.update(HF_HOME=str(runtime / "chatterbox/cache"), HF_HUB_DISABLE_XET="1",
-               HF_HUB_DOWNLOAD_TIMEOUT="120")
+               HF_HUB_DOWNLOAD_TIMEOUT="120", PKUSEG_HOME=str(runtime / "chatterbox/cache/pkuseg"))
     print("Downloading pinned multilingual model files (about 3.2 GB on first setup)…", flush=True)
     run([python, "-c",
          "import json,sys; from huggingface_hub import snapshot_download; "
@@ -101,8 +102,20 @@ def install(runtime, overrides):
          "allow_patterns=list(v['models']),local_dir=sys.argv[2])",
          HERE / "chatterbox-versions.json", runtime / "chatterbox/models"], env=env)
     verify_models(runtime)
-    run([python, "-c", "from chatterbox.mtl_tts import ChatterboxMultilingualTTS; "
-         "assert 'sv' in ChatterboxMultilingualTTS.get_supported_languages()"], env=env)
+    # Upstream initializes the Chinese tokenizer even for Swedish. Prepare its
+    # caches here, rather than permitting network downloads during synthesis.
+    run([python, "-c",
+         "import json,sys; from huggingface_hub import hf_hub_download; "
+         "from pathlib import Path; from chatterbox.models.tokenizers import MTLTokenizer; "
+         "from chatterbox.mtl_tts import ChatterboxMultilingualTTS; "
+         "from perth import PerthImplicitWatermarker; "
+         "v=json.load(open(sys.argv[1])); root=Path(sys.argv[2]); "
+         "mapping=hf_hub_download(v['model_repository'],filename='Cangjie5_TC.json'); "
+         "assert Path(mapping).read_bytes()==(root/'Cangjie5_TC.json').read_bytes(); "
+         "MTLTokenizer(str(root/'grapheme_mtl_merged_expanded_v1.json')); "
+         "assert 'sv' in ChatterboxMultilingualTTS.get_supported_languages(); "
+         "PerthImplicitWatermarker()",
+         HERE / "chatterbox-versions.json", runtime / "chatterbox/models"], env=env)
     installed = subprocess.check_output([str(python), "-m", "pip", "freeze"], text=True)
     (runtime / "chatterbox/installed-requirements.txt").write_text(installed)
     (runtime / "chatterbox/installed.json").write_text(json.dumps(VERSIONS, indent=2) + "\n")

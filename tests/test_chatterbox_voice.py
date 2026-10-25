@@ -1,4 +1,5 @@
 import hashlib
+import io
 import json
 import sys
 import tempfile
@@ -25,6 +26,18 @@ def wav_file(path, seconds=4):
 
 
 class ChatterboxTests(unittest.TestCase):
+    def test_worker_requires_prepared_cache_before_loading_or_downloading(self):
+        with tempfile.TemporaryDirectory() as tmp, \
+                patch.dict("os.environ", {"PKUSEG_HOME": tmp}), \
+                patch.object(sys, "argv", ["guide", "--text-file", "text.txt",
+                                          "--reference", "reference.wav",
+                                          "--model-dir", tmp, "--output", "guide.wav"]), \
+                patch.object(sys, "stderr", io.StringIO()) as errors:
+            with self.assertRaises(SystemExit) as stopped:
+                chatterbox_guide.main()
+            self.assertEqual(stopped.exception.code, 2)
+            self.assertIn("Tokenizer cache is missing", errors.getvalue())
+
     def test_worker_requests_swedish_and_character_reference(self):
         model, writer = Mock(), Mock()
         model.sr = 24000

@@ -80,7 +80,9 @@ Existing reference choices are preserved unless explicitly replaced. The
 installer accepts `--runtime-root` for another runtime location. To verify
 model files again, run `setup_chatterbox.py check` with the same Python.
 Synthesis uses local weights with Hugging Face offline mode enabled. Downloads
-happen only during setup. A first generation may take several minutes; its
+happen only during setup, including the upstream tokenizer's auxiliary cache.
+Setup also checks that Chatterbox's bundled watermarking component loads.
+A first generation may take several minutes; its
 limit is 15 minutes, followed by the existing three-minute RVC conversion limit.
 The original Chatterbox guide is retained as `chatterbox.wav` beside the final
 `voice.wav`, so you can compare expression before and after conversion.
