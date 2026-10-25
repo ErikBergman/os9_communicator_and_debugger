@@ -11,8 +11,6 @@ import json
 from pathlib import Path
 import struct
 
-from machfs import btree
-from macresources import parse_file
 
 
 def sha(data):
@@ -33,6 +31,9 @@ def mac_date(seconds):
 
 
 def hfs_inventory(volume, output):
+    from machfs import btree
+    from macresources import parse_file
+
     if volume[1024:1026] != b"BD":
         raise ValueError("Expected an HFS master directory block")
     fields = struct.unpack_from(">2sLLHHHHHLLHLH28pLHLLLHLL32sHHHL12sL12s", volume, 1024)
