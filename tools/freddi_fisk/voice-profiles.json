@@ -1,0 +1,6 @@
+{
+  "freddi": {"name": "Freddi", "description": "Nyfiken på nästa äventyr", "group": "fish"},
+  "linus": {"name": "Linus", "description": "Alltid något på gång", "group": "fish"},
+  "boss": {"name": "Boss", "description": "Hajchefen", "group": "shark", "requires_training_record": true},
+  "spongehead": {"name": "Spongehead", "description": "Hajkompisen", "group": "shark", "requires_training_record": true}
+}
