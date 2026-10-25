@@ -93,6 +93,7 @@ def install(runtime, overrides):
     env = os.environ.copy()
     env.update(HF_HOME=str(runtime / "chatterbox/cache"), HF_HUB_DISABLE_XET="1",
                HF_HUB_DOWNLOAD_TIMEOUT="120")
+    print("Downloading pinned multilingual model files (about 3.2 GB on first setup)…", flush=True)
     run([python, "-c",
          "import json,sys; from huggingface_hub import snapshot_download; "
          "v=json.load(open(sys.argv[1])); "
