@@ -64,7 +64,7 @@ def paired_wav(first, second, output, gap_seconds=1.25):
             target.writeframes(b.readframes(b.getnframes()))
 
 
-def render(runtime, output):
+def render(runtime, output, exaggeration=.6):
     rvc = runtime / "rvc"
     profiles = {}
     for label, experiment in (("A", "swedish-linus-v2"), ("B", ENGLISH_EXPERIMENT)):
@@ -84,7 +84,7 @@ def render(runtime, output):
     reference = runtime / "chatterbox/references/linus.wav"
     configuration = {"sentences": SENTENCES, "profiles": profiles, "epochs": 20,
                      "guide_reference": str(reference), "reference_sha256": digest(reference),
-                     "guide_language": "sv", "exaggeration": .6, "cfg_weight": .3,
+                     "guide_language": "sv", "exaggeration": exaggeration, "cfg_weight": .3,
                      "format": "16-bit PCM WAV, mono, 32000 Hz", "loudness": "-20 LUFS, -2 dBTP",
                      "order": "A: Swedish Freddi 1 training; B: English Freddi 2 training; both speak Swedish"}
     output.mkdir(parents=True, exist_ok=True)
@@ -152,7 +152,7 @@ def render(runtime, output):
             produce(guide, lambda temporary: run([runtime / "chatterbox-venv/bin/python",
                     FISH_TOOLS / "chatterbox_guide.py", "--text-file", text, "--reference", reference,
                     "--model-dir", runtime / "chatterbox/models", "--output", temporary,
-                    "--exaggeration", .6, "--device", "cpu"],
+                    "--exaggeration", exaggeration, "--device", "cpu"],
                     output / "logs" / f"{number:02d}-chatterbox.log", env, 900))
             guide32 = output / "guides" / f"{number:02d}-guide-32k.wav"
             produce(guide32, lambda temporary: run([studio.ffmpeg, "-nostdin", "-hide_banner", "-loglevel", "error",
@@ -216,7 +216,10 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--runtime-root", type=Path, default=APP_DATA / "runtime")
     parser.add_argument("--output", type=Path, default=APP_DATA / "comparisons/linus-sv-ff1-vs-en-ff2")
+    parser.add_argument("--exaggeration", type=float, default=.6)
     args = parser.parse_args()
+    if not 0 <= args.exaggeration <= 1.5:
+        parser.error("--exaggeration must be between zero and 1.5")
     output = args.output.expanduser().resolve()
     output.mkdir(parents=True, exist_ok=True)
     with (output / ".comparison.lock").open("a") as lock:
@@ -224,7 +227,7 @@ def main():
             fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BlockingIOError:
             parser.error("This comparison is already running")
-        render(args.runtime_root.expanduser().resolve(), output)
+        render(args.runtime_root.expanduser().resolve(), output, args.exaggeration)
 
 
 if __name__ == "__main__":

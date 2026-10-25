@@ -107,3 +107,11 @@ The recognizer transcribes each guide and both outputs as Swedish without being
 prompted with the expected sentence. `transcription-check.json` reports word
 edits, including å/ä/ö distinctions. This screens for skipped/repeated words;
 it cannot establish accent quality, naturalness or character similarity.
+
+The completed [listening experiment](../../analysis/freddi-fish-2/LINUS-COMPARISON.md)
+records the trained model hashes, final audio paths and observed limitations.
+The final listening package uses the calmer `--exaggeration 0.3` guide setting
+in `comparisons/linus-sv-ff1-vs-en-ff2-calm/`. The initial 0.6 pass is retained
+in the default folder. The local word checker uses FFmpeg to supply 16 kHz
+float audio directly because PyAV 19 removed a keyword expected by
+faster-whisper 1.2.1's built-in decoder.

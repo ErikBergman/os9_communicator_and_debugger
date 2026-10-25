@@ -119,3 +119,7 @@ a reviewed Swedish dialogue catalogue, font/encoding checks for å/ä/ö, safe
 resource rebuilding with updated sizes and speech references, timing checks and
 play testing. No translated game build or newly trained sequel character is
 claimed at this checkpoint.
+
+The subsequent [Linus comparison](LINUS-COMPARISON.md) completed a separate
+20-epoch English Linus model and six Swedish listening examples against the
+existing Swedish model, with shared guides and matched playback loudness.

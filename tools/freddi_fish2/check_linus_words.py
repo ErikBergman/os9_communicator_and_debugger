@@ -5,6 +5,8 @@ import argparse
 import json
 from pathlib import Path
 import re
+import shutil
+import subprocess
 
 APP_DATA = Path.home() / "Library/Application Support/FreddiFishVoiceStudio"
 
@@ -24,6 +26,7 @@ def word_errors(expected, observed):
 
 
 def check(runtime, comparison):
+    import numpy as np
     from faster_whisper import WhisperModel
     installation = json.loads((runtime / "whisper-small-installation.json").read_text())
     model = WhisperModel(str(runtime / "whisper-small"), device="cpu", compute_type="int8",
@@ -37,7 +40,13 @@ def check(runtime, comparison):
         paths = {"guide": comparison / "guides" / f'{row["number"]:02d}-guide-32k.wav',
                  **{label: comparison / voice["file"] for label, voice in row["voices"].items()}}
         for label, path in paths.items():
-            segments, info = model.transcribe(str(path), language="sv", task="transcribe", beam_size=5,
+            # Supply the supported float-array input, using the existing FFmpeg
+            # decoder; PyAV 19 removed a keyword used by faster-whisper 1.2.1.
+            pcm = subprocess.check_output([shutil.which("ffmpeg") or "/opt/homebrew/bin/ffmpeg",
+                "-nostdin", "-hide_banner", "-loglevel", "error", "-i", str(path),
+                "-ac", "1", "-ar", "16000", "-f", "f32le", "pipe:1"], timeout=30)
+            audio = np.frombuffer(pcm, dtype="<f4").copy()
+            segments, info = model.transcribe(audio, language="sv", task="transcribe", beam_size=5,
                 temperature=0, condition_on_previous_text=False, vad_filter=False)
             text = " ".join(segment.text.strip() for segment in segments).strip()
             item["recordings"][label] = {"file": str(path), "text": text, **word_errors(row["text"], text)}
