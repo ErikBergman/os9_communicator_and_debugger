@@ -16,6 +16,7 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
 DEFAULT_RUNTIME = Path.home() / "Library/Application Support/FreddiFishVoiceStudio/runtime"
 VERSIONS = json.loads((HERE / "chatterbox-versions.json").read_text())
+SPEAKERS = json.loads((HERE / "voice-profiles.json").read_text())
 
 
 def run(arguments, **kwargs):
@@ -34,12 +35,12 @@ def choose_reference(dataset, speaker):
     return dataset / row["file"]
 
 
-def install_references(runtime, overrides=None, dataset=None):
+def install_references(runtime, overrides=None, dataset=None, speakers=("freddi", "linus")):
     dataset = dataset or ROOT / "analysis/freddi-fisk/voice-work/datasets"
     destination = runtime / "chatterbox/references"
     destination.mkdir(parents=True, exist_ok=True)
     metadata = {}
-    for speaker in ("freddi", "linus"):
+    for speaker in speakers:
         target = destination / f"{speaker}.wav"
         source = (overrides or {}).get(speaker)
         if source is None and target.is_file():
@@ -74,7 +75,7 @@ def verify_models(runtime):
                 raise RuntimeError(f"Chatterbox model checksum mismatch: {model}")
 
 
-def install(runtime, overrides):
+def install(runtime, overrides, dataset=None, speakers=("freddi", "linus")):
     if sys.version_info[:2] != (3, 12):
         raise RuntimeError("Run setup with Python 3.12, as used for the existing RVC runtime")
     runtime.mkdir(parents=True, exist_ok=True)
@@ -82,7 +83,7 @@ def install(runtime, overrides):
                   if not (runtime / "chatterbox/models" / name).exists())
     if shutil.disk_usage(runtime).free < missing + 2 * 1024**3:
         raise RuntimeError("Not enough free disk space for Chatterbox models and Python tools")
-    install_references(runtime, overrides)
+    install_references(runtime, overrides, dataset=dataset, speakers=speakers)
     (runtime / "chatterbox/installed.json").unlink(missing_ok=True)
     environment = runtime / "chatterbox-venv"
     if not environment.exists():
@@ -126,16 +127,18 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("action", choices=("install", "references", "check"))
     parser.add_argument("--runtime-root", type=Path, default=DEFAULT_RUNTIME)
-    for speaker in ("freddi", "linus"):
+    parser.add_argument("--speakers", nargs="+", choices=tuple(SPEAKERS), default=["freddi", "linus"])
+    parser.add_argument("--dataset-root", type=Path, default=ROOT / "analysis/freddi-fisk/voice-work/datasets")
+    for speaker in SPEAKERS:
         parser.add_argument(f"--reference-{speaker}", type=Path)
     args = parser.parse_args()
     runtime = args.runtime_root.expanduser().resolve()
     overrides = {speaker: getattr(args, "reference_" + speaker)
-                 for speaker in ("freddi", "linus")}
+                 for speaker in SPEAKERS}
     if args.action == "install":
-        install(runtime, overrides)
+        install(runtime, overrides, dataset=args.dataset_root, speakers=args.speakers)
     elif args.action == "references":
-        install_references(runtime, overrides)
+        install_references(runtime, overrides, dataset=args.dataset_root, speakers=args.speakers)
     else:
         verify_models(runtime)
         print("Chatterbox model sizes and checksums verified.")
