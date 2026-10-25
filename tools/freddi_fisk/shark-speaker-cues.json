@@ -1,0 +1,7 @@
+{
+  "0010_room_10.scu": {"sha256": "bc2dda13477d5c9b7084c9874ca24383af62517eaeec05039786ee1fe1e6ebfa", "scripts": {"47": {"170": "boss", "164": "spongehead"}}},
+  "0052_room_52.scu": {"sha256": "10000e7bb21788146c108e0b1266c387c4780f2484076a81dfbab84416f39468", "scripts": {"63": {"154": "boss", "148": "spongehead"}}},
+  "0059_room_59.scu": {"sha256": "16ea32f4eba95788d09dd847850e2993c6015d13613746a2870552af62beef18", "scripts": {"65": {"154": "boss", "148": "spongehead"}}},
+  "0060_room_60.scu": {"sha256": "fdc006b981d95a77de894246b25b4b2e489e55c76aff65302ceedff0a95915d0", "scripts": {"66": {"154": "boss", "148": "spongehead"}}},
+  "0061_room_61.scu": {"sha256": "abdb0819f51d7f660eeadbdc12e98ff01d81cd6bc4adb6d0286fec5e2685850e", "scripts": {"200": {"154": "boss", "147": "spongehead"}}}
+}

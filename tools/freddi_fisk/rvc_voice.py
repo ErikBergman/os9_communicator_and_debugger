@@ -13,14 +13,17 @@ ROOT = Path(__file__).resolve().parents[2]
 WORK = ROOT / "analysis/freddi-fisk/voice-work"
 RVC = ROOT / ".local-tools/rvc"
 PYTHON = ROOT / ".local-tools/rvc-venv/bin/python"
+DATASET_ROOT = None
+SPEAKERS = json.loads(Path(__file__).with_name("voice-profiles.json").read_text())
 
 
 def run(arguments):
     env = os.environ.copy()
-    env.update(PYTHONPATH=str(RVC), RVC_AUDIO_FORCE_CPU="1", OMP_NUM_THREADS="4",
-               MPLCONFIGDIR=str(WORK / "cache/matplotlib"),
-               NUMBA_CACHE_DIR=str(WORK / "cache/numba"),
-               HF_HOME=str(WORK / "cache/huggingface"))
+    cache = RVC.parent / "cache"
+    env.update(PYTHONPATH=str(RVC), RVC_AUDIO_FORCE_CPU="1",
+               OMP_NUM_THREADS=os.environ.get("RVC_TRAIN_THREADS", "4"),
+               MPLCONFIGDIR=str(cache / "matplotlib"),
+               NUMBA_CACHE_DIR=str(cache / "numba"), HF_HOME=str(cache / "huggingface"))
     if not shutil.which("ffmpeg"):
         env["PATH"] = "/opt/homebrew/bin:" + env.get("PATH", "")
     print("+", " ".join(map(str, arguments)), flush=True)
@@ -32,7 +35,7 @@ def name_for(speaker, smoke):
 
 
 def input_files(speaker, smoke):
-    files = sorted((WORK / "datasets" / speaker / "train").glob("*.wav"))
+    files = sorted(((DATASET_ROOT or WORK / "datasets") / speaker / "train").glob("*.wav"))
     if len(files) < 3:
         raise ValueError("Need at least three training clips; run dataset preparation first")
     if smoke:
@@ -116,6 +119,11 @@ def train(speaker, smoke, epochs):
     # Upstream can return success even if a child training process failed.
     if not model.exists() or model.stat().st_mtime_ns == before:
         raise RuntimeError("Training did not export a new model; inspect the experiment's train.log")
+    completed = exp / "completed-training.json"
+    temporary = completed.with_suffix(".installing")
+    temporary.write_text(json.dumps({"epochs": epochs,
+                                    "model_sha256": hashlib.sha256(model.read_bytes()).hexdigest()}, indent=2) + "\n")
+    temporary.replace(completed)
     print(model)
 
 
@@ -132,15 +140,23 @@ def convert(speaker, smoke, source, output, pitch):
 
 
 def main():
+    global RVC, PYTHON, DATASET_ROOT
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("action", choices=("prepare", "train", "convert"))
-    parser.add_argument("speaker", choices=("freddi", "linus"))
+    parser.add_argument("speaker", choices=tuple(SPEAKERS))
+    parser.add_argument("--runtime-root", type=Path, help="RVC runtime root outside iCloud Documents")
+    parser.add_argument("--dataset-root", type=Path, help="Folder containing per-character train directories")
     parser.add_argument("--smoke", action="store_true", help="Separate three-clip plumbing test; not a usable voice model")
     parser.add_argument("--epochs", type=int, default=20, help="Total target epochs, including earlier runs")
     parser.add_argument("--input", type=Path)
     parser.add_argument("--output", type=Path)
     parser.add_argument("--pitch", type=int, default=0)
     args = parser.parse_args()
+    if args.runtime_root:
+        runtime = args.runtime_root.expanduser().resolve()
+        RVC, PYTHON = runtime / "rvc", runtime / "rvc-venv/bin/python"
+    if args.dataset_root:
+        DATASET_ROOT = args.dataset_root.expanduser().resolve()
     if args.epochs < 1:
         parser.error("--epochs must be positive")
     if args.action == "prepare":

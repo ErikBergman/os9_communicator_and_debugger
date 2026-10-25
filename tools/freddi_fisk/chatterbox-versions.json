@@ -1,0 +1,13 @@
+{
+  "package": "chatterbox-tts==0.1.7",
+  "model_repository": "ResembleAI/chatterbox",
+  "model_revision": "5bb1f6ee58e50c3b8d408bc82a6d3740c2db6e18",
+  "models": {
+    "ve.pt": {"size": 5698626, "sha256": "4b16d836bc598509860f6fa068165a8bb5e9ac84f05582dfcf278a5a372879f1"},
+    "s3gen.pt": {"size": 1057165844, "sha256": "9b9ff07e60b20c136e2b1b3d7563a24604e8d2c4c267888d1ee929dd0151d2a3"},
+    "t3_mtl23ls_v2.safetensors": {"size": 2143989752, "sha256": "b1237586127ce98e7800a68e49938eb5092846862aabcb6e17b2fda7889a6c75"},
+    "grapheme_mtl_merged_expanded_v1.json": {"size": 69989},
+    "conds.pt": {"size": 107374, "sha256": "6552d70568833628ba019c6b03459e77fe71ca197d5c560cef9411bee9d87f4e"},
+    "Cangjie5_TC.json": {"size": 1920163}
+  }
+}

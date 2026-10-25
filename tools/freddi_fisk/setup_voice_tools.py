@@ -16,6 +16,7 @@ ROOT = HERE.parents[1]
 LOCAL = ROOT / ".local-tools"
 WORK = ROOT / "analysis/freddi-fisk/voice-work"
 VERSIONS = json.loads((HERE / "voice-tool-versions.json").read_text())
+SPEAKERS = json.loads((HERE / "voice-profiles.json").read_text())
 
 
 def run(args, **kwargs):
@@ -100,15 +101,18 @@ def profiles():
     if source.resolve() == destination.resolve():
         raise ValueError("Choose a separate --runtime-root for the voice studio")
     copied = 0
-    for speaker in ("freddi", "linus"):
+    for speaker in SPEAKERS:
         for suffix in ("-smoke", ""):
             experiment = f"swedish-{speaker}-v2{suffix}"
             model = source / "assets/weights" / (experiment + ".pth")
             indexes = sorted((source / "logs" / experiment).glob("added*.index"))
+            record = source / "logs" / experiment / "completed-training.json"
             if not model.is_file() or not indexes:
                 continue
-            # Publish the model last, once its matching index is in place.
-            for path in [*indexes, model]:
+            if SPEAKERS[speaker].get("requires_training_record") and not record.is_file():
+                continue
+            # Publish the matching index before the model and completion record.
+            for path in [*indexes, model, *([record] if record.is_file() else [])]:
                 target = destination / path.relative_to(source)
                 target.parent.mkdir(parents=True, exist_ok=True)
                 temporary = target.with_name(target.name + ".installing")

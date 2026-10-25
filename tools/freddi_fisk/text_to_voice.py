@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Local Swedish text -> macOS Alva -> character-specific RVC conversion."""
+"""Local Swedish text -> Chatterbox or Alva -> character-specific RVC."""
 
 import json
 import os
@@ -16,6 +16,8 @@ ROOT = Path(__file__).resolve().parents[2]
 MAX_TEXT = 400
 TERMINAL = {"done", "error"}
 APP_DATA = Path.home() / "Library/Application Support/FreddiFishVoiceStudio"
+CHATTERBOX = json.loads(Path(__file__).with_name("chatterbox-versions.json").read_text())
+SPEAKERS = json.loads(Path(__file__).with_name("voice-profiles.json").read_text())
 
 
 class UnavailableError(RuntimeError):
@@ -32,6 +34,8 @@ class VoiceStudio:
         self.rvc = runtime / "rvc"
         self.output = self.data_home / "recordings"
         self.python = runtime / "rvc-venv/bin/python"
+        self.chatterbox_python = runtime / "chatterbox-venv/bin/python"
+        self.chatterbox = runtime / "chatterbox"
         self.ffmpeg = shutil.which("ffmpeg") or "/opt/homebrew/bin/ffmpeg"
         self.jobs = {}
         self.lock = threading.Lock()
@@ -42,36 +46,62 @@ class VoiceStudio:
 
     def profiles(self):
         profiles = {}
-        for speaker, name in (("freddi", "Freddi"), ("linus", "Linus")):
+        for speaker, specification in SPEAKERS.items():
             for suffix, kind in (("", "trained"), ("-smoke", "preview")):
                 experiment = f"swedish-{speaker}-v2{suffix}"
                 model = self.rvc / "assets/weights" / (experiment + ".pth")
                 indexes = sorted((self.rvc / "logs" / experiment).glob("added*.index"))
+                if specification.get("requires_training_record") and not (
+                        self.rvc / "logs" / experiment / "completed-training.json").is_file():
+                    continue
                 if model.is_file() and indexes:
-                    profiles[speaker] = {"name": name, "kind": kind, "model": model,
+                    profiles[speaker] = {"name": specification["name"], "kind": kind, "model": model,
                                          "index": indexes[-1]}
                     break
         return profiles
 
     def status(self):
         profiles = self.profiles()
-        return {"max_text": MAX_TEXT, "voices": {
-            speaker: {"name": speaker.title(), "available": speaker in profiles,
-                      "kind": profiles.get(speaker, {}).get("kind", "missing")}
-            for speaker in ("freddi", "linus")}}
+        ready = {speaker: self.chatterbox_ready(speaker) for speaker in SPEAKERS}
+        return {"max_text": MAX_TEXT, "default_engine": "chatterbox" if any(ready.values()) else "alva",
+                "engines": {"alva": {"available": True},
+                            "chatterbox": {"available": any(ready.values())}}, "voices": {
+            speaker: {"name": SPEAKERS[speaker]["name"], "available": speaker in profiles,
+                      "description": SPEAKERS[speaker]["description"],
+                      "group": SPEAKERS[speaker]["group"],
+                      "kind": profiles.get(speaker, {}).get("kind", "missing"),
+                      "chatterbox_available": ready[speaker]}
+            for speaker in SPEAKERS}}
 
-    def create(self, text, speaker, rate=160, pitch=0):
+    def chatterbox_ready(self, speaker):
+        if not self.chatterbox_python.is_file() or not (self.chatterbox / "installed.json").is_file():
+            return False
+        if not (self.chatterbox / "references" / f"{speaker}.wav").is_file():
+            return False
+        return all((self.chatterbox / "models" / name).is_file() and
+                   (self.chatterbox / "models" / name).stat().st_size == spec["size"]
+                   for name, spec in CHATTERBOX["models"].items())
+
+    def create(self, text, speaker, rate=160, pitch=0, engine=None, exaggeration=0.6):
         if not isinstance(text, str) or not text.strip() or len(text.strip()) > MAX_TEXT:
             raise ValueError(f"Skriv mellan 1 och {MAX_TEXT} tecken.")
-        if speaker not in ("freddi", "linus"):
-            raise ValueError("Välj Freddi eller Linus.")
+        if not isinstance(speaker, str) or speaker not in SPEAKERS:
+            raise ValueError("Välj en av rösterna i studion.")
         if type(rate) is not int or rate not in (130, 160, 190):
             raise ValueError("Ogiltigt taltempo.")
         if type(pitch) is not int or not -12 <= pitch <= 12:
             raise ValueError("Tonhöjden måste vara mellan −12 och 12.")
+        if engine is None:
+            engine = "chatterbox" if self.chatterbox_ready(speaker) else "alva"
+        if engine not in ("alva", "chatterbox"):
+            raise ValueError("Välj Alva eller Chatterbox som talmotor.")
+        if type(exaggeration) not in (int, float) or not 0 <= exaggeration <= 1.5:
+            raise ValueError("Uttrycket måste vara mellan 0 och 1,5.")
         profile = self.profiles().get(speaker)
         if profile is None or not self.python.is_file():
             raise UnavailableError("Röstmodellen är inte installerad ännu.")
+        if engine == "chatterbox" and not self.chatterbox_ready(speaker):
+            raise UnavailableError("Chatterbox eller röstens referensklipp är inte installerat ännu. Välj Alva tills vidare.")
         with self.lock:
             if self.closed:
                 raise UnavailableError("Röststudion håller på att stängas.")
@@ -79,7 +109,8 @@ class VoiceStudio:
                 raise OverflowError("Kön är full. Vänta tills en inspelning är klar.")
             identifier = uuid.uuid4().hex
             self.jobs[identifier] = {"id": identifier, "text": text.strip(), "speaker": speaker,
-                                     "model_kind": profile["kind"], "state": "queued"}
+                                     "model_kind": profile["kind"], "engine": engine,
+                                     "exaggeration": exaggeration, "state": "queued"}
             self.executor.submit(self.generate, identifier, profile, rate, pitch)
         return self.get(identifier)
 
@@ -156,14 +187,34 @@ class VoiceStudio:
                    NUMBA_CACHE_DIR=str(self.data_home / "cache/numba"))
         with (folder / "engine.log").open("w") as log:
             progress("synthesizing")
-            self.command(["/usr/bin/say", "-v", "Alva", "-r", rate, "-f", text,
-                          "-o", folder / "guide.aiff"], log, timeout=60)
+            guide = folder / "guide.aiff"
+            tempo = []
+            if job["engine"] == "chatterbox":
+                guide = folder / "chatterbox.wav"
+                chatterbox_env = os.environ.copy()
+                chatterbox_env.pop("PYTHONPATH", None)
+                chatterbox_env.update(HF_HOME=str(self.chatterbox / "cache"),
+                                       HF_HUB_OFFLINE="1", TRANSFORMERS_OFFLINE="1",
+                                       HF_HUB_DISABLE_TELEMETRY="1",
+                                       PYTORCH_ENABLE_MPS_FALLBACK="1", OMP_NUM_THREADS="2")
+                self.command([self.chatterbox_python,
+                              Path(__file__).with_name("chatterbox_guide.py"),
+                              "--text-file", text, "--reference",
+                              self.chatterbox / "references" / f"{job['speaker']}.wav",
+                              "--model-dir", self.chatterbox / "models",
+                              "--output", guide, "--exaggeration", job["exaggeration"],
+                              "--device", os.environ.get("VOICE_CHATTERBOX_DEVICE", "cpu")],
+                             log, env=chatterbox_env, timeout=900)
+                tempo = ["-af", f"atempo={rate / 160:.4f}"]
+            else:
+                self.command(["/usr/bin/say", "-v", "Alva", "-r", rate, "-f", text,
+                              "-o", guide], log, timeout=60)
             self.command([self.ffmpeg, "-hide_banner", "-loglevel", "error", "-i",
-                          folder / "guide.aiff", "-ac", 1, "-ar", 32000,
+                          guide, *tempo, "-ac", 1, "-ar", 32000,
                           "-c:a", "pcm_s16le", folder / "guide.wav"], log, timeout=30)
             with wave.open(str(folder / "guide.wav"), "rb") as wav:
                 if wav.getnframes() < wav.getframerate() / 10:
-                    raise RuntimeError("macOS skapade inget tal. Starta studion från en vanlig terminal så att Alva kan användas.")
+                    raise RuntimeError("Talmotorn skapade inget tal. Se inspelningens engine.log.")
             progress("converting")
             self.command([self.python, Path(__file__).with_name("rvc_infer_worker.py"),
                           "--model", profile["model"], "--index", profile["index"],

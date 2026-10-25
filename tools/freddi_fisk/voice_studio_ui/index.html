@@ -18,7 +18,7 @@
     <section class="intro">
       <span class="eyebrow">EN LITEN SVENSK RÖSTSTUDIO</span>
       <h1>Något nytt att säga.</h1>
-      <p>Skriv en mening på svenska.<br class="mobile-break"> Låt Freddi eller Linus läsa upp den.</p>
+      <p>Skriv en mening på svenska.<br class="mobile-break"> Låt Freddi, Linus eller hajarna läsa upp den.</p>
     </section>
     <form id="studio" class="studio">
       <fieldset class="voice-picker">
@@ -35,11 +35,26 @@
           <span><strong>Linus</strong><small>Alltid något på gång</small></span>
           <span class="selection" aria-hidden="true">✓</span>
         </label>
+        <label class="voice-card boss">
+          <input type="radio" name="speaker" value="boss">
+          <svg viewBox="0 0 108 70" aria-hidden="true"><path d="m77 34 24-18-3 38-24-15" fill="#657b8c"/><path d="M13 39q4-23 36-24l9-13 9 16q15 8 16 22-9 20-40 18Q19 57 13 39" fill="#91a7b5"/><path d="m17 39 24 3-10 10" fill="#fffaf0"/><path d="m24 42 3 5 4-4 3 6 4-5" fill="#546874"/><ellipse cx="32" cy="29" rx="5" ry="6" fill="#fffaf0"/><circle cx="30" cy="30" r="2.5" fill="#21444a"/><path d="m22 23 15 4M62 33l-3 12m9-10-3 11" stroke="#546874" stroke-width="2.5" fill="none"/></svg>
+          <span><strong>Boss</strong><small>Hajchefen</small></span>
+          <span class="selection" aria-hidden="true">✓</span>
+        </label>
+        <label class="voice-card spongehead">
+          <input type="radio" name="speaker" value="spongehead">
+          <svg viewBox="0 0 108 70" aria-hidden="true"><path d="m78 36 23-18-2 39-24-17" fill="#658b92"/><path d="M13 39q3-21 34-23L57 3l9 16q16 8 17 23-12 19-42 16Q18 55 13 39" fill="#98bcc0"/><ellipse cx="29" cy="26" rx="6" ry="9" fill="#fffaf0"/><ellipse cx="42" cy="25" rx="6" ry="9" fill="#fffaf0"/><circle cx="28" cy="29" r="2.5" fill="#21444a"/><circle cx="41" cy="28" r="2.5" fill="#21444a"/><path d="M21 43q12 12 27 0" fill="#fffaf0" stroke="#4b767b" stroke-width="2"/><path d="m32 45 3 6 4-6M64 34l-3 11m9-9-3 10" stroke="#4b767b" stroke-width="2" fill="none"/></svg>
+          <span><strong>Spongehead</strong><small>Hajkompisen</small></span>
+          <span class="selection" aria-hidden="true">✓</span>
+        </label>
       </fieldset>
       <div class="text-heading"><label for="text">Vad vill du säga?</label><span id="count">0 / 400</span></div>
       <textarea id="text" name="text" rows="4" maxlength="400" required spellcheck="true" placeholder="Hej Linus! Jag tror att jag har hittat en ledtråd.">Hej Linus! Ska vi leta efter skatten?</textarea>
       <div class="prompts"><span>Prova en replik</span><button type="button" data-text="Jag tror att det finns en ledtråd här någonstans.">En ledtråd</button><button type="button" data-text="Oj! Vad var det där för något?">Något mystiskt</button><button type="button" data-text="Kom, så ger vi oss ut på ett nytt äventyr!">Ett nytt äventyr</button></div>
-      <details class="adjustments"><summary>Justera rösten <span>Valfritt</span></summary><div class="controls"><label for="rate">Taltempo<select id="rate"><option value="130">Lugnt</option><option value="160" selected>Normalt</option><option value="190">Snabbt</option></select></label><label for="pitch">Tonhöjd <output id="pitch-value" for="pitch">0</output><input type="range" id="pitch" min="-12" max="12" value="0" step="1"><span class="range-labels"><small>Mörkare</small><small>Ljusare</small></span></label></div></details>
+      <details class="adjustments"><summary>Justera rösten <span>Valfritt</span></summary><div class="controls">
+        <label for="engine">Talröst<select id="engine"><option value="chatterbox" disabled>Chatterbox + RVC</option><option value="alva" selected>Alva + RVC</option></select></label>
+        <label for="exaggeration">Uttryck<select id="exaggeration" disabled><option value="0.3">Lugnt</option><option value="0.6" selected>Naturligt</option><option value="0.9">Livligt</option></select></label>
+        <label for="rate">Taltempo<select id="rate"><option value="130">Lugnt</option><option value="160" selected>Normalt</option><option value="190">Snabbt</option></select></label><label for="pitch">Tonhöjd <output id="pitch-value" for="pitch">0</output><input type="range" id="pitch" min="-12" max="12" value="0" step="1"><span class="range-labels"><small>Mörkare</small><small>Ljusare</small></span></label></div></details>
       <div class="action-row"><span class="shortcut">⌘ / Ctrl + Enter för att skapa</span><button id="generate" class="generate" type="submit" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 11 7-11 7Z" fill="currentColor"/></svg> Skapa röst</button></div>
       <p id="error" class="error" role="alert" hidden></p>
     </form>
