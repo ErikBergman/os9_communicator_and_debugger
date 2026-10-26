@@ -1,0 +1,231 @@
+{
+  "schema": 1,
+  "selection": "Explicit colours within checksum-pinned rooms, plus existing Freddi/Linus positions and shark cutscene cues. Script evidence, not a listening audit. Cameos with uncertain identities remain separate.",
+  "rooms": {
+    "0002_room_2.scu": {
+      "sha256": "91a22e7facd98689f0245b46e72820c24d8e5b53a2e760862e5739a41e087243",
+      "colors": {
+        "181": "sam"
+      }
+    },
+    "0004_room_4.scu": {
+      "sha256": "48e8e1a999423456d4eb1de9bc28ebf4d720a00cfcbad47a14de7079a5fc9925",
+      "colors": {
+        "177": "jason"
+      }
+    },
+    "0005_room_5.scu": {
+      "sha256": "1c66c2139e3914903846c0b3b2821dc9a1cd681a48c19b0626227d97042e45c0",
+      "colors": {
+        "176": "snappy"
+      }
+    },
+    "0007_room_7.scu": {
+      "sha256": "9ae3398aaa219e80893d4a308bd3c0706c40487a4368952ab123ffeb143c2351",
+      "colors": {
+        "168": "grandma"
+      }
+    },
+    "0058_room_58.scu": {
+      "sha256": "b246cab41ba7e753fa9bd3e8cb2e222eab2dcdf54b92bcfd50d9cfe2e92ec036",
+      "colors": {
+        "179": "grandma"
+      }
+    },
+    "0013_room_13.scu": {
+      "sha256": "47ac6f3b123052156a4e47c2cb5aa5c6ffc153d1a51fee2331390df6e04fb6d4",
+      "colors": {
+        "162": "mr_starfish"
+      }
+    },
+    "0014_room_14.scu": {
+      "sha256": "702fced9bcb5883f8cf2f470053fc36299449ef7a225d8feef3738985b2eadc0",
+      "colors": {
+        "149": "dogfish"
+      }
+    },
+    "0021_room_21.scu": {
+      "sha256": "c929f01202b8dc442c052e10b22978a44f81c5b77e4d33443e5e1581931fe185",
+      "colors": {
+        "178": "eddie"
+      }
+    },
+    "0028_room_28.scu": {
+      "sha256": "8e631665593cbd634978035ca596d4343271a8f98520172597abec4bb9ea8294",
+      "colors": {
+        "165": "augie"
+      }
+    },
+    "0029_room_29.scu": {
+      "sha256": "6c4f1b07e75406ada3a17c57b0ce2eae1fa48b7cf56aa1f27afbac60e046a4e7",
+      "colors": {
+        "176": "augie"
+      }
+    },
+    "0031_room_31.scu": {
+      "sha256": "20017d3a23fd93d68739e9257ab03c2f36160bb8cc2898953ec57a52910b4a28",
+      "colors": {
+        "182": "herman"
+      }
+    },
+    "0033_room_33.scu": {
+      "sha256": "bfc263b6d21d42e6449ff125d6ac3f2f7bfa80d4c5ea733c961846e1291583a8",
+      "colors": {
+        "185": "castle_guard"
+      }
+    },
+    "0035_room_35.scu": {
+      "sha256": "a669c12adb57faba885f011c787040d89c169b5d6c0d93ad32946eb8e0a967d5",
+      "colors": {
+        "164": "king_crab"
+      }
+    },
+    "0037_room_37.scu": {
+      "sha256": "2a199c39b66492fcef582067fd23c65904e972041a436288580b5ba0e604224d",
+      "colors": {
+        "147": "mrs_halibut",
+        "159": "gabby"
+      }
+    },
+    "0039_room_39.scu": {
+      "sha256": "22c907fc952db09be4cc5fc65eee70794e23187b7eb1322e71ccddd225ffd248",
+      "colors": {
+        "159": "gabby"
+      }
+    },
+    "0041_room_41.scu": {
+      "sha256": "73e4102894e3ac001b70a1fa61cff319d86aef7788656dbc925e0869ef5df3f3",
+      "colors": {
+        "184": "ray"
+      }
+    },
+    "0043_room_43.scu": {
+      "sha256": "14e720446086da70615ad2a2d182c8a5134899920a379b24e0032e3b0f5ef87a",
+      "colors": {
+        "186": "pearl_oyster"
+      }
+    },
+    "0045_room_45.scu": {
+      "sha256": "b1f1d6c47ca6dba61650d0db6e80280ff6c03184a67a4d4326ab2f0f7cac3494",
+      "colors": {
+        "176": "fiddler_crab"
+      }
+    },
+    "0047_room_47.scu": {
+      "sha256": "6ac194a15635c0e2a90bbfc07854da7d2e313afc67341a20330fc29a49b5dabb",
+      "colors": {
+        "210": "old_seahorse"
+      }
+    },
+    "0049_room_49.scu": {
+      "sha256": "ac8edb6a45ab9c788503d724a8b99b891682906e10772f005f2532735bd9fcae",
+      "colors": {
+        "13": "zoo_visitor"
+      }
+    },
+    "0051_room_51.scu": {
+      "sha256": "42e5fd46c21edb0be65d3bd27c9c6b5beddb89ffb416f5d2e9dce010bec71140",
+      "colors": {
+        "177": "fineas"
+      },
+      "exclude_scripts": [
+        "206"
+      ]
+    },
+    "0055_room_55.scu": {
+      "sha256": "1c97cc6172f97ea5928bebd7effba38c59f18b5db255da7246918b057691df7b",
+      "colors": {
+        "236": "kelp_celebrant"
+      }
+    },
+    "0057_room_57.scu": {
+      "sha256": "834440f1a0be08279814952b95d051ffdd18e12a5fa42216af65ff5f4d0dbd46",
+      "colors": {
+        "159": "ending_guppy"
+      }
+    },
+    "0061_room_61.scu": {
+      "sha256": "abdb0819f51d7f660eeadbdc12e98ff01d81cd6bc4adb6d0286fec5e2685850e",
+      "colors": {
+        "162": "squidfather"
+      }
+    }
+  },
+  "notes": {
+    "dogfish": "Only one very short spoken word; experimental timbre, no phonetic coverage.",
+    "castle_guard": "Only three source utterances.",
+    "pearl_oyster": "One dialogue role in the pearl game; random takes share the same speaking slot. No claim of a separate actor for each visual oyster.",
+    "old_seahorse": "Descriptive role name; not an inferred Swedish character name.",
+    "zoo_visitor": "One brief cameo line. Kept separate from named characters.",
+    "fineas": "Exclude the colour-133 shouts and the musical call-and-response.",
+    "kelp_celebrant": "One cameo line; identity not inferred from a reused colour in another room.",
+    "ending_guppy": "Two cameo lines. Kept separate from Gabby: colour alone across rooms does not establish identity.",
+    "squidfather": "Only grumbles in the source; experimental timbre, no Swedish pronunciation coverage."
+  },
+  "script_sha256": {
+    "0001_room_1.scu": "14e65f847a0b9107493a990d4940e9d7bb9a3cd130b3c180f3e72bd128003d2a",
+    "0002_room_2.scu": "91a22e7facd98689f0245b46e72820c24d8e5b53a2e760862e5739a41e087243",
+    "0003_room_3.scu": "c3ac55f77ba935c650c26a244509d1e8de21e8bed2b83006e48a8d957a2c6f4a",
+    "0004_room_4.scu": "48e8e1a999423456d4eb1de9bc28ebf4d720a00cfcbad47a14de7079a5fc9925",
+    "0005_room_5.scu": "1c66c2139e3914903846c0b3b2821dc9a1cd681a48c19b0626227d97042e45c0",
+    "0006_room_6.scu": "3291286259ed0a46b2d44e3318f8a94d99a6c55b75efda3c7f7f9c25aa6a4a45",
+    "0007_room_7.scu": "9ae3398aaa219e80893d4a308bd3c0706c40487a4368952ab123ffeb143c2351",
+    "0008_room_8.scu": "b2f169e949a55e805b9e1ca87c285939c79a222e4149777ff498ce4f1aa0fe31",
+    "0009_room_9.scu": "724b23d331017d785b90389eb1007b94c9dbfb45968447342cc26f5b5cc1f96d",
+    "0010_room_10.scu": "bc2dda13477d5c9b7084c9874ca24383af62517eaeec05039786ee1fe1e6ebfa",
+    "0011_room_11.scu": "d10b5033d437776b77de61c5ec9a478e1ec3525d2528017e7ba32acac0cb3c40",
+    "0012_room_12.scu": "c0f97123d9ff865da3ad4074ddd01005dbd0a00365dd39d1fa59bc232a01e28b",
+    "0013_room_13.scu": "47ac6f3b123052156a4e47c2cb5aa5c6ffc153d1a51fee2331390df6e04fb6d4",
+    "0014_room_14.scu": "702fced9bcb5883f8cf2f470053fc36299449ef7a225d8feef3738985b2eadc0",
+    "0015_room_15.scu": "fe9ddd0e47da4160cd1d78f20dcdd9d05cc6266dcb152b3c95aafd41526306a8",
+    "0016_room_16.scu": "70c15a2140343c5d5c0668e28ddef964c01a497a0dd5f671491b2ad107f65af0",
+    "0017_room_17.scu": "5ea91f4e9f5fec31c01d0af4d5e51b207235190ef9d41fb2fab97cad0920053d",
+    "0018_room_18.scu": "d8f30ccf41eb181f091ea1df97cd07f9c6a7adfef9e3fa9ab86f6cca71dda4eb",
+    "0019_room_19.scu": "93d75a35ea1c70d277121d59cc52a7430975503eb7bb6496b5c4713d19040cbb",
+    "0020_room_20.scu": "820742a7fd27e59a501bbbb5c7b3e56f593025a6191a8f2c289258a51640f0e8",
+    "0021_room_21.scu": "c929f01202b8dc442c052e10b22978a44f81c5b77e4d33443e5e1581931fe185",
+    "0022_room_22.scu": "6887d8d15f71e5a2bb09baf51e9801c1f8d6d0eebad739e6c2632a6a1be08e8f",
+    "0023_room_23.scu": "21c491cc40ca393474e7e5a03d714fb31054d61463b158c2cd235ae6e1f671e7",
+    "0024_room_24.scu": "718f6ad246d71817c834e8d7f1c430b1a2680a80054444fa523f9f39d2c01f56",
+    "0025_room_25.scu": "02cb8cdfa47ee84e3e9e2a6bf3931b35caf841af11ddd776032d8d569b84d93d",
+    "0026_room_26.scu": "e543352a9808a6734c84bc8c38a15e0cc6c90b4566b73760262db1eddfd38112",
+    "0027_room_27.scu": "903d6d2e6734e9b42fd64e3d02c8225066653a8c27726c9fc547a14d43b6d3af",
+    "0028_room_28.scu": "8e631665593cbd634978035ca596d4343271a8f98520172597abec4bb9ea8294",
+    "0029_room_29.scu": "6c4f1b07e75406ada3a17c57b0ce2eae1fa48b7cf56aa1f27afbac60e046a4e7",
+    "0030_room_30.scu": "1ce60892d376005205f2164c29259d458115c1c0dcb1082488699e5d8cc5b780",
+    "0031_room_31.scu": "20017d3a23fd93d68739e9257ab03c2f36160bb8cc2898953ec57a52910b4a28",
+    "0032_room_32.scu": "980103fa36b8fe58db809fa57b0e20361e5359e3044e03072eef74f35003f773",
+    "0033_room_33.scu": "bfc263b6d21d42e6449ff125d6ac3f2f7bfa80d4c5ea733c961846e1291583a8",
+    "0034_room_34.scu": "94649416d44a154798cc09dc71bbb86841c4fc61c15335c81666be03225a4ed2",
+    "0035_room_35.scu": "a669c12adb57faba885f011c787040d89c169b5d6c0d93ad32946eb8e0a967d5",
+    "0036_room_36.scu": "d92c61cedec11eaefcac3ae26f607c5889cc7ed9febf4ca75b451870f8a1e0ff",
+    "0037_room_37.scu": "2a199c39b66492fcef582067fd23c65904e972041a436288580b5ba0e604224d",
+    "0038_room_38.scu": "70b93e887975438c4c80c5e99e19313d2ceabfc6cb8579e4add22602a9801372",
+    "0039_room_39.scu": "22c907fc952db09be4cc5fc65eee70794e23187b7eb1322e71ccddd225ffd248",
+    "0040_room_40.scu": "65ed14f93ec7483b2b05d9edcdaf5008977d47357d02d16bbfd91ace3a464fad",
+    "0041_room_41.scu": "73e4102894e3ac001b70a1fa61cff319d86aef7788656dbc925e0869ef5df3f3",
+    "0042_room_42.scu": "e8acbe3b9ba1f88b0ad3770c7cc1e42b41926583810135477e0762236fd7ec97",
+    "0043_room_43.scu": "14e720446086da70615ad2a2d182c8a5134899920a379b24e0032e3b0f5ef87a",
+    "0044_room_44.scu": "490f1c93025ac346a218cc1460f81ae09a0f7ffe4440f14e75214983b6afecb7",
+    "0045_room_45.scu": "b1f1d6c47ca6dba61650d0db6e80280ff6c03184a67a4d4326ab2f0f7cac3494",
+    "0046_room_46.scu": "1859974a2d708ce0fa14e823fe7601e788186024e5e5187bc53452cfbc1abf83",
+    "0047_room_47.scu": "6ac194a15635c0e2a90bbfc07854da7d2e313afc67341a20330fc29a49b5dabb",
+    "0048_room_48.scu": "7e5da5262ef72166849b610ad92ffbc3eaba47e016521d7faaca4ac5b2a17e87",
+    "0049_room_49.scu": "ac8edb6a45ab9c788503d724a8b99b891682906e10772f005f2532735bd9fcae",
+    "0050_room_50.scu": "97795baaff9392651de85004e1d325b5421ece38102d17ccff6e13676444fe26",
+    "0051_room_51.scu": "42e5fd46c21edb0be65d3bd27c9c6b5beddb89ffb416f5d2e9dce010bec71140",
+    "0052_room_52.scu": "10000e7bb21788146c108e0b1266c387c4780f2484076a81dfbab84416f39468",
+    "0053_room_53.scu": "2dd24795e861ff9262c463cab1b1b88f859da17327771fb4bab04520bd5e06fc",
+    "0054_room_54.scu": "ec3604dcf284bd2396e8d9d1a4cc86c75f24ba51be068ac6a989085dbe8a2694",
+    "0055_room_55.scu": "1c97cc6172f97ea5928bebd7effba38c59f18b5db255da7246918b057691df7b",
+    "0056_room_56.scu": "449360b3463d518d60fcf52094d155b7b1a82e5eb576f294538f18a29cfed9af",
+    "0057_room_57.scu": "834440f1a0be08279814952b95d051ffdd18e12a5fa42216af65ff5f4d0dbd46",
+    "0058_room_58.scu": "b246cab41ba7e753fa9bd3e8cb2e222eab2dcdf54b92bcfd50d9cfe2e92ec036",
+    "0059_room_59.scu": "16ea32f4eba95788d09dd847850e2993c6015d13613746a2870552af62beef18",
+    "0060_room_60.scu": "fdc006b981d95a77de894246b25b4b2e489e55c76aff65302ceedff0a95915d0",
+    "0061_room_61.scu": "abdb0819f51d7f660eeadbdc12e98ff01d81cd6bc4adb6d0286fec5e2685850e",
+    "0062_room_62.scu": "abe019c1f4d0cf3cd15860892f32b048265a0671489d7198a023505049ecb3e3",
+    "0063_room_63.scu": "f2cdeb05e0133cdf4c126b3ec07ac5fc8f3e5f39b351d3696b45dc5215b619cc",
+    "0064_room_64.scu": "a19cdff388d8486e48d769c486983fda500986985eb44357ff7ff063b46440ae"
+  }
+}

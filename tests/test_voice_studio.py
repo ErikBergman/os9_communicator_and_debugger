@@ -11,7 +11,7 @@ from unittest.mock import patch
 
 TOOLS = Path(__file__).resolve().parents[1] / "tools/freddi_fisk"
 sys.path.insert(0, str(TOOLS))
-from text_to_voice import VoiceStudio
+from text_to_voice import VoiceStudio, SPEAKERS
 from voice_studio import StudioServer
 import setup_voice_tools
 sys.path.remove(str(TOOLS))
@@ -25,7 +25,7 @@ def fake_model(root, speaker="freddi", suffix="-smoke"):
     experiment.mkdir(parents=True, exist_ok=True)
     (weights / (name + ".pth")).write_bytes(b"test model")
     (experiment / "added_test.index").write_bytes(b"test index")
-    if speaker in ("boss", "spongehead"):
+    if SPEAKERS[speaker].get("requires_training_record"):
         (experiment / "completed-training.json").write_text('{"epochs":20}')
     python = root / ".local-tools/rvc-venv/bin/python"
     python.parent.mkdir(parents=True, exist_ok=True)
@@ -88,7 +88,7 @@ class StudioTests(unittest.TestCase):
             studio.close()
 
     def test_both_sharks_use_separate_trained_model_index_pairs(self):
-        self.assertEqual(set(self.studio.status()["voices"]), {"freddi", "linus", "boss", "spongehead"})
+        self.assertEqual(set(self.studio.status()["voices"]), set(SPEAKERS))
         for speaker in ("boss", "spongehead"):
             fake_model(self.root, speaker=speaker, suffix="")
             profile = self.studio.profiles()[speaker]
@@ -109,6 +109,15 @@ class StudioTests(unittest.TestCase):
         record = self.root / ".local-tools/rvc/logs/swedish-boss-v2/completed-training.json"
         record.unlink()
         self.assertFalse(self.studio.status()["voices"]["boss"]["available"])
+
+    def test_secondary_cast_becomes_selectable_only_after_its_own_export(self):
+        fake_model(self.root, speaker="grandma", suffix="")
+        profile = self.studio.profiles()["grandma"]
+        self.assertEqual(profile["model"].stem, "swedish-grandma-v2")
+        self.assertEqual(profile["index"].parent.name, "swedish-grandma-v2")
+        record = profile["index"].parent / "completed-training.json"
+        record.unlink()
+        self.assertNotIn("grandma", self.studio.profiles())
 
     def test_copying_shark_profile_preserves_completion_record(self):
         fake_model(self.root, speaker="boss", suffix="")

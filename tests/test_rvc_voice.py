@@ -18,6 +18,12 @@ WORKER_SPEC.loader.exec_module(worker)
 
 
 class TrainingInputTests(unittest.TestCase):
+    def test_custom_experiment_keeps_english_linus_separate_from_swedish_model(self):
+        self.assertEqual(rvc.name_for("linus", False), "swedish-linus-v2")
+        with patch.object(rvc, "EXPERIMENT", "english-linus-freddi2-v2"):
+            self.assertEqual(rvc.name_for("linus", False), "english-linus-freddi2-v2")
+            self.assertEqual(rvc.name_for("linus", True), "english-linus-freddi2-v2-smoke")
+
     def make_inputs(self, root):
         train = root / "datasets/freddi/train"
         validation = root / "datasets/freddi/validation"

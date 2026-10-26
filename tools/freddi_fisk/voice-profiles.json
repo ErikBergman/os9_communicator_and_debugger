@@ -1,6 +1,156 @@
 {
-  "freddi": {"name": "Freddi", "description": "Nyfiken på nästa äventyr", "group": "fish"},
-  "linus": {"name": "Linus", "description": "Alltid något på gång", "group": "fish"},
-  "boss": {"name": "Boss", "description": "Hajchefen", "group": "shark", "requires_training_record": true},
-  "spongehead": {"name": "Spongehead", "description": "Hajkompisen", "group": "shark", "requires_training_record": true}
+  "freddi": {
+    "name": "Freddi",
+    "description": "Nyfiken på nästa äventyr",
+    "group": "fish"
+  },
+  "linus": {
+    "name": "Linus",
+    "description": "Alltid något på gång",
+    "group": "fish"
+  },
+  "boss": {
+    "name": "Boss",
+    "description": "Hajchefen",
+    "group": "shark",
+    "requires_training_record": true
+  },
+  "spongehead": {
+    "name": "Spongehead",
+    "description": "Hajkompisen",
+    "group": "shark",
+    "requires_training_record": true
+  },
+  "sam": {
+    "name": "Sam",
+    "description": "Blommorna i inledningen",
+    "group": "cast",
+    "requires_training_record": true
+  },
+  "jason": {
+    "name": "Jason",
+    "description": "Fisken i inledningen",
+    "group": "cast",
+    "requires_training_record": true
+  },
+  "snappy": {
+    "name": "Snappy Turtle",
+    "description": "Sköldpaddan i inledningen",
+    "group": "cast",
+    "requires_training_record": true
+  },
+  "grandma": {
+    "name": "Grandma Grouper",
+    "description": "Farmor",
+    "group": "cast",
+    "requires_training_record": true
+  },
+  "mr_starfish": {
+    "name": "Mr. Starfish",
+    "description": "Matteläraren",
+    "group": "cast",
+    "requires_training_record": true
+  },
+  "dogfish": {
+    "name": "Junkyard Dogfish",
+    "description": "Hunden vid skroten",
+    "group": "cast",
+    "requires_training_record": true
+  },
+  "eddie": {
+    "name": "Eddie the Eel",
+    "description": "Ålen",
+    "group": "cast",
+    "requires_training_record": true
+  },
+  "augie": {
+    "name": "Augie",
+    "description": "Bläckfisken vid teatern",
+    "group": "cast",
+    "requires_training_record": true
+  },
+  "herman": {
+    "name": "Herman",
+    "description": "Eremitkräftan",
+    "group": "cast",
+    "requires_training_record": true
+  },
+  "castle_guard": {
+    "name": "Castle Gatekeeper",
+    "description": "Rösten vid slottets port",
+    "group": "cast",
+    "requires_training_record": true
+  },
+  "king_crab": {
+    "name": "King Crab",
+    "description": "Krabbkungen",
+    "group": "cast",
+    "requires_training_record": true
+  },
+  "mrs_halibut": {
+    "name": "Mrs. Halibut",
+    "description": "Gabbys mamma",
+    "group": "cast",
+    "requires_training_record": true
+  },
+  "gabby": {
+    "name": "Gabby",
+    "description": "Den lilla fisken under stenen",
+    "group": "cast",
+    "requires_training_record": true
+  },
+  "ray": {
+    "name": "Ray",
+    "description": "Samlaren av klockor",
+    "group": "cast",
+    "requires_training_record": true
+  },
+  "pearl_oyster": {
+    "name": "Pearl game oyster",
+    "description": "Rösten i pärlspelet",
+    "group": "cast",
+    "requires_training_record": true
+  },
+  "fiddler_crab": {
+    "name": "Fiddler Crab",
+    "description": "Krabban i buren",
+    "group": "cast",
+    "requires_training_record": true
+  },
+  "old_seahorse": {
+    "name": "Old seahorse",
+    "description": "Sjöhästen vid vraket",
+    "group": "cast",
+    "requires_training_record": true
+  },
+  "zoo_visitor": {
+    "name": "Zoo visitor",
+    "description": "Besökaren vid vraket",
+    "group": "cast",
+    "requires_training_record": true
+  },
+  "fineas": {
+    "name": "Fineas McFinn",
+    "description": "Sjömannen med veven",
+    "group": "cast",
+    "requires_training_record": true
+  },
+  "kelp_celebrant": {
+    "name": "Kelp celebrant",
+    "description": "Kelp-firaren i slutet",
+    "group": "cast",
+    "requires_training_record": true
+  },
+  "ending_guppy": {
+    "name": "Ending guppy",
+    "description": "Fisken som firar skatten",
+    "group": "cast",
+    "requires_training_record": true
+  },
+  "squidfather": {
+    "name": "The Squidfather",
+    "description": "Bläckfiskbossen",
+    "group": "cast",
+    "requires_training_record": true
+  }
 }

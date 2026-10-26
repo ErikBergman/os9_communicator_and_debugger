@@ -45,6 +45,10 @@ voice conversion. The local voice studio can generate Swedish guide speech with
 Chatterbox Multilingual and apply the trained character voices, with macOS Alva
 available for comparison. See [dataset evidence](analysis/freddi-fisk/VOICE-DATASET.md).
 
+The [Freddi Fish 2 investigation](analysis/freddi-fish-2/README.md) records the
+preserved English CD, extracted speech and scripts, and the planned Swedish
+localization using the existing voices plus new character models.
+
 ## Checks and handover
 
 Run from the repository root:
